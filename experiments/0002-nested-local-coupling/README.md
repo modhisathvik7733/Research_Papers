@@ -91,6 +91,7 @@ node ratio g8/l8 = 5.8x, deterministic across all seeds
 | **P1 adversarial control** | `--p1 10` | **DEGENERATE** — single tuned scalar ties both local-PC and global (see below) |
 | **C-scale** (pre-registered) | `--p1-scale 8` | predicted DEGENERATE → **CONFIRMED**: same geometry 10×/5×/5×/5× larger still degenerate (sc 0.751 / lpc 0.750 / gl 0.748, margin +0.004, 0/8 div). Degeneracy is geometry, not size. |
 | **C-hetero** (pre-registered) | `--p2 10` | predicted "NESTING MATTERS" → **NOT cleanly confirmed**: verbatim rule still DEGENERATE on 9 stable seeds (margin +0.048 ≤ pooled 0.065). BUT degeneracy breaking (monotone gl 0.704 < lpc 0.729 < sc 0.748; exploratory paired gl<sc 8/9) + **global diverged 1/10** (L2O blow-up, never on canonical geometry). |
+| **C-stronger** (pre-registered) | `--p2-strength 10` | predicted monotone margin (a) + flip at h\*≤4 (b) + div↑h (c) → **(a) confirmed, (b)(c) NOT**. Margin grows 0.027→0.169 monotone but pooled inflates in lockstep; rule DEGENERATE at every h∈{0..4}; **bounding clause triggered → §4.3/Eq.45 family ROBUSTLY degenerate**. |
 
 ## P1 resolution (the pre-registered control — RUN, DEGENERATE)
 
@@ -154,22 +155,42 @@ checked: 0.617/0.611/0.617 → DEGENERATE, as before).
   (iii) **global hypergradient diverged 1/10** (1.08e23 — L2O pathology),
   while local-PC and scalar never diverged.
 
-**Synthesis:** §4.3/Eq.45 degeneracy is **scale-robust** and only **partially
-lifted by strong heterogeneity** — a deep property, not a small-scale artifact.
-The one regime where credit assignment starts to matter is exactly where the
-expensive hypergradient is unstable and the cheap O(1) local rule is not →
-Contribution A re-motivated on a **second axis (stability)**; Contribution B
-stays deflated by the governing verdict.
+**C-stronger sweep (`--p2-strength 10`, h∈{0,1,2,3,4}):**
+
+```
+   h   scalar  nest_best   margin   pooled  div_gl     verdict
+ 0.0   0.6097     0.5833  +0.0265   0.0988    0/10  DEGENERATE   (sanity ✓)
+ 1.0   0.7483     0.6998  +0.0484   0.0653    1/10  DEGENERATE
+ 2.0   0.9412     0.8727  +0.0685   0.0931    0/10  DEGENERATE
+ 3.0   1.1564     1.0288  +0.1276   0.1491    0/10  DEGENERATE
+ 4.0   1.3425     1.1731  +0.1694   0.1860    0/10  DEGENERATE
+margin monotone non-decreasing in h: True   |   h=0 sanity: DEGENERATE
+margin/pooled ratio: 0.27 → 0.74 → 0.74 → 0.86 → 0.91  (→ never crosses 1)
+```
+
+(a) monotone margin **confirmed**; (b) flip at h\*≤4 **NOT** (variance
+inflates in lockstep — rule DEGENERATE at every h); (c) div↑h **NOT** (1/10
+at h=1 only). Bounding clause triggered. **Not extrapolated past the
+pre-registered grid** (at h=4 per-task condition spread ≈2000:1; further is
+pathological).
+
+**Synthesis:** §4.3/Eq.45 degeneracy is **scale-robust** and **family-level
+robust** — it survives P1, scale-up, heterogeneous Hessians + non-orthogonal
+directions, AND a pre-registered curvature-spread sweep to ~2000:1. The mean
+nested advantage grows but never clears seed noise within the family.
+Contribution A moves from *contingent* to **explicitly bounded**: no
+demonstrated home anywhere in this family; it retains only a stability edge
+over the sometimes-diverging hypergradient. Contribution B deflated,
+family-level. Next benchmark must **leave the family** (P3).
 
 ## Remaining (now the critical path)
 
-1. **P2-stronger** — raise heterogeneity strength until the pre-registered
-   separation bar is *cleanly* cleared (or bound where it cannot be). C-hetero
-   shows the direction; this pins the regime.
-2. **P3** — bias–variance crossover where genuine long-horizon credit is
-   required (global should overtake scalar there).
-3. **Divergence-rate confirmation** — the 1/10 global blow-up is first-class
-   but n=10; confirm the rate at higher n.
-4. Real-d demonstration converting the proven graph-memory law into an actual
+1. **P3 — leave the §4.3/Eq.45 family entirely.** Genuinely different per-task
+   feature *functions* / nonstationary correlated streams / a structure where
+   optimal Φ provably needs long-horizon credit. Must be non-degenerate by
+   this same verbatim test before any "the structural law matters" claim.
+2. **Divergence-rate confirmation** — the global blow-up is first-class but
+   sparse (1/10 at h=1 only); confirm rate at higher n.
+3. Real-d demonstration converting the proven graph-memory law into an actual
    OOM/timeout (extrapolation only so far).
-5. Deep-MLP *per level* (currently tanh-per-level + MLP combiner).
+4. Deep-MLP *per level* (currently tanh-per-level + MLP combiner).

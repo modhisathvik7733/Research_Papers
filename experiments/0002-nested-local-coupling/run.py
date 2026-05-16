@@ -50,6 +50,10 @@ HETERO = False      # set by --p2: break BOTH degeneracy sources of §4.3/Eq.45
                     #   (2) non-orthogonal correlated task directions r_t.
                     # Under H-deg this is the construction predicted to make
                     # credit assignment matter (single scalar should separate).
+HET_STRENGTH = 1.0  # P2-stronger knob: per-task anisotropy = (0.3+1.7u)^h.
+                    # h=0 homogeneous (degenerate anchor); h=1 reproduces the
+                    # original C-hetero point exactly; h>1 raises per-task
+                    # condition-number spread monotonically.
 
 
 def reseed(seed):
@@ -105,7 +109,9 @@ def make_task(seed):
         # momentum/decay is simultaneously optimal across curvatures.
         gc = torch.Generator().manual_seed(5000 + seed)
         A = torch.randn(D_IN, D_IN, generator=gc) / math.sqrt(D_IN)
-        aniso = 0.3 + 1.7 * torch.rand(D_IN, generator=gc)   # per-task scaling
+        # per-task anisotropy; ^HET_STRENGTH scales condition-number spread.
+        # h=1 -> exactly the original C-hetero formula (backward-compatible).
+        aniso = (0.3 + 1.7 * torch.rand(D_IN, generator=gc)) ** HET_STRENGTH
         L = A * aniso
 
         def sample(n):
@@ -866,6 +872,62 @@ def p1(n):
               "on the stable subset does NOT erase that the hypergradient is "
               "unstable on this geometry.)")
     print(f"total wall time: {time.perf_counter() - t0:.1f}s")
+    verdict = "DEGENERATE" if ties else ("NESTING" if nest_wins else "AMBIG")
+    return {"verdict": verdict, "ns": ns, "n": n,
+            "scalar": float(scS.mean()) if ns else float("nan"),
+            "nested_best": float(nested_best.mean()) if ns else float("nan"),
+            "margin": float(margin), "pooled": float(pooled),
+            "div_gl": d_lg, "div_ll": d_ll}
+
+
+def p2_strength(n):
+    """P2-stronger (§7.6.3). Sweep heterogeneity strength h; per-task
+    anisotropy = (0.3+1.7u)^h. h=0 homogeneous (degenerate anchor), h=1 = the
+    reproduced C-hetero point, h>1 = more heterogeneous Hessians. Same p1()
+    decision rule reused verbatim per h. Pre-registered: margin grows
+    monotone in h and the rule flips DEGENERATE->NESTING at some h*, OR it
+    never flips (=> the §4.3/Eq.45 family is robustly degenerate, which
+    BOUNDS — does not rescue — the structural law)."""
+    global HETERO, HET_STRENGTH
+    HETERO = True
+    grid = [0.0, 1.0, 2.0, 3.0, 4.0]
+    print("P2-STRONGER heterogeneity sweep (toy size, K=8)")
+    print("PRE-REGISTERED: margin grows monotone in h; verbatim rule flips "
+          "DEGENERATE->NESTING at some h*, else family robustly degenerate "
+          "(bounds Contribution A). h=0 must read DEGENERATE (sanity).\n")
+    rows = []
+    for h in grid:
+        HET_STRENGTH = h
+        reseed(0)
+        print(f"\n========== heterogeneity strength h = {h} ==========")
+        r = p1(n)
+        rows.append((h, r))
+    print("\n" + "=" * 74)
+    print("P2-STRONGER SUMMARY")
+    print(f"{'h':>4} {'scalar':>8} {'nest_best':>10} {'margin':>8} "
+          f"{'pooled':>8} {'div_gl':>7} {'verdict':>11}")
+    for h, r in rows:
+        print(f"{h:>4} {r['scalar']:>8.4f} {r['nested_best']:>10.4f} "
+              f"{r['margin']:>+8.4f} {r['pooled']:>8.4f} "
+              f"{r['div_gl']:>4}/{r['n']:<2} {r['verdict']:>11}")
+    margins = [r["margin"] for _, r in rows]
+    mono = all(margins[i] <= margins[i + 1] + 1e-6
+               for i in range(len(margins) - 1))
+    flip = next((h for h, r in rows if r["verdict"] == "NESTING"), None)
+    h0 = next(r for h, r in rows if h == 0.0)
+    print("-" * 74)
+    print(f"margin monotone non-decreasing in h: {mono}")
+    print(f"h=0 sanity (must be DEGENERATE): {h0['verdict']}")
+    if flip is not None:
+        print(f"P2-STRONGER VERDICT: rule FLIPS to NESTING MATTERS at h*={flip}"
+              " — heterogeneity lifts the degeneracy; the structural law has a "
+              "regime where credit assignment genuinely matters.")
+    else:
+        print("P2-STRONGER VERDICT: rule NEVER flips up to h=4 — the "
+              "§4.3/Eq.45 family is ROBUSTLY optimizer-degenerate even under "
+              "severe per-task curvature heterogeneity. This BOUNDS (does not "
+              "rescue) Contribution A: the next benchmark must leave the "
+              "family entirely (P3).")
 
 
 def p1_scale(n):
@@ -1046,6 +1108,8 @@ if __name__ == "__main__":
         p2(int(sys.argv[2]) if len(sys.argv) > 2 else 10)
     elif len(sys.argv) > 1 and sys.argv[1] == "--p2-scale":
         p2_scale(int(sys.argv[2]) if len(sys.argv) > 2 else 8)
+    elif len(sys.argv) > 1 and sys.argv[1] == "--p2-strength":
+        p2_strength(int(sys.argv[2]) if len(sys.argv) > 2 else 10)
     elif len(sys.argv) > 1 and sys.argv[1] == "--lambda":
         lambda_sweep(int(sys.argv[2]) if len(sys.argv) > 2 else 8)
     elif len(sys.argv) > 1 and sys.argv[1] == "--lambda-fair":

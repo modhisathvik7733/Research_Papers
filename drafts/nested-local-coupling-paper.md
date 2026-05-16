@@ -4,13 +4,14 @@
 follow-up controls run. The pre-registered adversarial control (P1) returned
 **DEGENERATE**; the pre-registered **scale** control confirmed degeneracy is
 scale-robust (prediction held); the pre-registered **heterogeneity** control
-did **not** cleanly confirm its prediction but showed the degeneracy breaking
-and surfaced a hypergradient-**instability** finding. The credit-assignment
-contribution is **deflated by our own control** and reported as such; one
-**unconditional structural law** survives, its significance now located in the
-heterogeneous regime where it also gains a stability advantage. All numbers are
-8–10-seed CPU runs reproducible from a single script (see Reproducibility). No
-claim is softened; one of our own pre-registered predictions was wrong and is
+did **not** cleanly confirm its prediction; a final pre-registered
+**heterogeneity sweep** then triggered its **bounding clause** — the §4.3/Eq.45
+construction *family* is robustly optimizer-degenerate. The credit-assignment
+contribution is **deflated by our own controls**; the **unconditional
+structural law** survives but is now **explicitly bounded** — it has no
+demonstrated home anywhere in this benchmark family. All numbers are 8–10-seed
+CPU runs reproducible from a single script (see Reproducibility). No claim is
+softened; several of our own pre-registered predictions were wrong and are
 reported as wrong.*
 
 ---
@@ -60,14 +61,20 @@ reads degenerate — but the degeneracy is visibly breaking (monotone global
 0.704 < local-PC 0.729 < scalar 0.748; exploratory paired test global < scalar
 on 8/9 stable seeds) and, critically, the **global hypergradient diverged on
 1/10 seeds** in exactly this regime while the cheap O(1) local rule stayed
-stable. Net: the canonical benchmark's deflation of the credit-assignment
-contribution is real and scale-robust; the structural law's significance is
-located in the heterogeneous regime, where it gains an unanticipated second
-advantage — stability — over the hypergradient. We present this as a bounded,
-honest result in which one of our own pre-registered predictions was wrong and
-is reported as wrong: a solid structural law, a scale-robust
-benchmark-degeneracy finding, and a sharpened map of where (and why) cheap
-local coupling would actually matter.
+stable. A final pre-registered heterogeneity *sweep* (h ∈ {0..4}) then
+resolved the boundary: the nested–scalar margin grows monotonically but seed
+variance inflates in lockstep, the verbatim rule reads DEGENERATE at every h,
+and the **pre-registered bounding clause triggers** — the §4.3/Eq.45
+construction *family* is robustly optimizer-degenerate. Net: the deflation of
+the credit-assignment contribution is real, scale-robust, and **family-level**;
+the unconditional structural law survives but is now **explicitly bounded** —
+no demonstrated home anywhere in this family, gaining only an unanticipated
+stability edge over the (sometimes-diverging) hypergradient. We present this as
+a bounded, honest result in which several of our own pre-registered predictions
+were wrong and are reported as wrong: a solid structural law, a scale-robust
+*family-level* benchmark-degeneracy finding, and a precise statement that the
+next benchmark must leave the family entirely (P3) before cheap local coupling
+can be said to matter.
 
 ---
 
@@ -359,6 +366,22 @@ which **re-motivates Contribution A on a second axis (stability), not just
 memory**, without rescuing Contribution B (still deflated by the governing
 verdict).
 
+**C-stronger — pre-registered heterogeneity sweep (§7.6.3–4), 10 seeds,
+h ∈ {0,1,2,3,4}.** The decisive follow-up. *Predicted: margin grows
+monotonically (a) and the verbatim rule flips DEGENERATE→NESTING at some
+h\*≤4 (b), with divergence rising in h (c).* **Outcome: (a) confirmed,
+(b) and (c) not.** The mean nested advantage grows monotonically (margin
+0.027→0.048→0.069→0.128→0.169) but the seed variance inflates in lockstep, so
+margin/pooled rises 0.27→0.91 toward — never across — the threshold; the rule
+reads DEGENERATE at *every* h, and h=0 sanity is DEGENERATE. We report (b)/(c)
+as misses and do not extrapolate past the pre-registered grid (at h=4 the
+per-task condition spread is already ≈2000:1). **The pre-registered bounding
+clause triggers**: the §4.3/Eq. 45 *construction family* is robustly
+optimizer-degenerate, upgrading the P1 point result to a family-level,
+monotone, bounded negative and moving Contribution A from *contingent* to
+*explicitly bounded* — no demonstrated home anywhere in this family; the next
+benchmark must leave it (P3).
+
 ---
 
 ## 6. What we claim and what we do not — after P1
@@ -397,11 +420,12 @@ paper than "a cheaper credit rule."
 **We do not claim.** (i) Superiority. (ii) That local-PC's quality parity is
 evidence for the method — P1 removed that reading. (iii) A demonstrated
 hardware failure (extrapolation from the O(H·K·d) law). (iv) Any result beyond
-a 24-d, 10-task toy. (v) That the structural law matters *yet* — credit
-assignment is scale-robustly moot on the canonical geometry (C-scale, §5.7);
-it begins to matter only under heterogeneity (C-hetero, §5.7), where the
-structural law's significance is now located but not yet cleanly established
-(the pre-registered separation bar was not cleared; P2-stronger/P3 remain).
+a 24-d, 10-task toy. (v) That the structural law matters *anywhere yet* —
+credit assignment is moot on the canonical geometry (P1), scale-robustly
+(C-scale), and across the entire pre-registered heterogeneity sweep
+(C-stronger, h≤4, bounding clause triggered). The law is **explicitly
+bounded**: no demonstrated home anywhere in the §4.3/Eq.45 family. Only a
+benchmark *outside* the family (P3) could establish it.
 
 ---
 
@@ -558,6 +582,74 @@ where it gains a second, unanticipated axis — stability — over the
 hypergradient. **P2-stronger** (raise heterogeneity until the pre-registered
 bar is cleared) and **P3** are the remaining boundary-locating work.
 
+#### 7.6.3 P2-stronger — pre-registered heterogeneity sweep (prediction fixed before running)
+
+C-hetero shows the degeneracy *breaking* but not *broken*. P2-stronger
+introduces a single heterogeneity-strength knob h: per-task input anisotropy
+is `(0.3 + 1.7·u)^h` per coordinate, so h scales the per-task condition-number
+spread (h=0 ⇒ homogeneous Σ, the degenerate anchor; h=1 ⇒ exactly the
+reproduced C-hetero point; h>1 ⇒ progressively more heterogeneous Hessians).
+We sweep h ∈ {0, 1, 2, 3, 4}, 10 seeds, **P1 decision rule reused verbatim**,
+divergence guard active.
+
+> **P2-stronger (pre-registered).** As h increases, (a) the
+> best-scalar−best-nested margin grows monotonically and (b) there exists an
+> h\* in the swept range at which the verbatim rule **flips DEGENERATE →
+> NESTING MATTERS** (margin > pooled std *and* scalar > nested_best + 0.5·pooled
+> on the stable subset); (c) the global divergence rate increases with h.
+> **Bounding clause:** if the rule does **not** flip anywhere up to h=4, we
+> report that the §4.3/Eq. 45 construction *family* is robustly
+> optimizer-degenerate even under severe per-task curvature heterogeneity —
+> which **bounds** (does not rescue) Contribution A: the structural law would
+> then have no home in this family and the next benchmark must leave the
+> family entirely (P3). Either outcome is reported straight; h=0 must read
+> DEGENERATE as an internal sanity check.
+
+#### 7.6.4 P2-stronger resolution (run; bounding clause triggered)
+
+The sweep (10 seeds, h ∈ {0,1,2,3,4}, verbatim rule, guard active):
+
+| h | scalar | nested_best | margin | pooled | div(gl) | verdict |
+|---|---|---|---|---|---|---|
+| 0 | 0.610 | 0.583 | +0.027 | 0.099 | 0/10 | DEGENERATE |
+| 1 | 0.748 | 0.700 | +0.048 | 0.065 | 1/10 | DEGENERATE |
+| 2 | 0.941 | 0.873 | +0.069 | 0.093 | 0/10 | DEGENERATE |
+| 3 | 1.156 | 1.029 | +0.128 | 0.149 | 0/10 | DEGENERATE |
+| 4 | 1.343 | 1.173 | +0.169 | 0.186 | 0/10 | DEGENERATE |
+
+Of the three pre-registered predictions: **(a) monotone margin growth —
+confirmed** (0.027→0.169, strictly non-decreasing); **(b) a flip to NESTING at
+some h\*≤4 — not confirmed** (the rule never flips); **(c) divergence rising
+with h — not confirmed** (1/10 at h=1, 0 elsewhere; sporadic, no trend). We
+report (b)/(c) as misses, not re-interpreted. The h=0 sanity reads DEGENERATE
+as required.
+
+*Mechanism (honest, not a rescue).* The reason (b) fails is not absence of a
+mean effect but **variance inflation**: per-task curvature heterogeneity grows
+the mean nested advantage and the seed-to-seed variance roughly in lockstep,
+so margin/pooled rises monotonically (0.27, 0.74, 0.74, 0.86, **0.91**) toward
+— but never across — the threshold within the pre-registered grid. We
+explicitly do **not** extrapolate a flip beyond h=4: it was not pre-registered,
+and at h=4 the per-task condition-number spread is already ≈2000:1, beyond
+which the base task is pathological and the comparison uninterpretable. The
+rising ratio is logged as the precise open question for P3, not as evidence of
+a latent positive.
+
+**The pre-registered bounding clause therefore triggers.** The §4.3/Eq. 45
+construction *family* — the canonical NL forgetting benchmark and its natural
+heterogeneous generalizations (per-task Hessians, non-orthogonal task
+directions, curvature spread to ~2000:1) — is **robustly
+optimizer-degenerate**. This upgrades the P1 single-point deflation to a
+**family-level, pre-registered, monotone, bounded negative**, and it changes
+Contribution A's status from "contingent" to **explicitly bounded**: the O(1)
+structural law has *no demonstrated home anywhere in this family*. A benchmark
+that can adjudicate credit assignment must leave the family entirely — e.g.
+genuinely different per-task feature *functions*, nonstationary correlated
+streams, or a task structure where the optimal Φ provably depends on
+long-horizon credit (P3). That is the honest next step; we do not claim the
+structural law matters until such a benchmark exists and is non-degenerate by
+this same verbatim test.
+
 ---
 
 ## 8. Limitations
@@ -567,17 +659,21 @@ bar is cleared) and **P3** are the remaining boundary-locating work.
   scalar matches both local-PC and the hypergradient. Contribution B does not
   stand as evidence for the method; it stands as evidence the benchmark is
   optimizer-degenerate.
-- **The structural law's motivation is contingent and only partially
-  resolved.** §6A (O(1) vs O(H)) is exact and unconditional, but it matters
-  only where credit assignment does. C-scale (§5.7) shows the canonical
-  geometry is scale-robustly degenerate; C-hetero (§5.7) shows heterogeneity
-  *begins* to lift this but **did not clear our pre-registered separation bar**
-  — so the regime where the law matters is identified but not yet cleanly
-  demonstrated (P2-stronger/P3 remain).
-- **One of our pre-registered predictions was wrong.** C-hetero was predicted
-  to show clean "NESTING MATTERS"; it did not (still degenerate by the verbatim
-  rule). Reported as a miss, not re-interpreted into a success. The supporting
-  8/9 paired result is exploratory and explicitly *not* pre-registered.
+- **The structural law is explicitly bounded, not merely contingent.** §6A
+  (O(1) vs O(H)) is exact and unconditional, but it matters only where credit
+  assignment does — and credit assignment is degenerate on the canonical
+  geometry (P1), at scale (C-scale), and across the entire pre-registered
+  heterogeneity sweep up to ~2000:1 condition spread (C-stronger, bounding
+  clause). The law therefore has **no demonstrated home in the §4.3/Eq.45
+  family**; only a benchmark outside the family (P3) could give it one. This
+  is the single largest limitation and we state it as a bound, not a promise.
+- **Several of our pre-registered predictions were wrong.** C-hetero was
+  predicted to show clean "NESTING MATTERS"; it did not. C-stronger predicted
+  a DEGENERATE→NESTING flip at some h≤4 (b) and divergence rising with h (c);
+  neither held — only the monotone-margin prediction (a) did. All misses are
+  reported as misses, not re-interpreted into successes. The supporting 8/9
+  paired result and the rising margin/pooled ratio are exploratory and
+  explicitly *not* pre-registered; we do not extrapolate them.
 - **Hypergradient instability is a finding, with a small-n caveat.** Global
   diverged on 1/10 C-hetero seeds (the L2O pathology); local-PC/scalar did
   not. This is first-class but is a single divergence at n=10 — the *rate* is
@@ -639,6 +735,9 @@ Single self-contained script, CPU, deterministic, no external data:
   non-orthogonal r_t; verbatim rule → DEGENERATE on stable subset; reports
   1/10 global divergence)**
 - `python run.py --p2-scale 8` — C-hetero at scale (both controls combined)
+- `python run.py --p2-strength 10` — **§5.7 / §7.6.3–4 C-stronger
+  (pre-registered heterogeneity sweep h∈{0..4}; monotone margin confirmed;
+  bounding clause triggered → family robustly degenerate)**
 
 Sweeps run in ≈5–40 s on an Apple M1 Max (C-scale ≈9 min). Pre-registered
 criteria, the (verbatim, reused) P1 decision rule, the divergence guard, and
@@ -675,14 +774,24 @@ degeneracy is scale-robust, not a small-toy artifact — answering the obvious
 showed the degeneracy genuinely breaking once tasks have heterogeneous
 curvature, and it surfaced an unanticipated finding: in exactly that regime the
 *expensive* hypergradient becomes unstable (diverges) while the *cheap, O(1)*
-local rule does not. So the honest, sharpened position: on Nested Learning's
-canonical forgetting construction (at any scale) credit assignment is moot and
-Contribution B stays deflated; the surviving structural law's significance is
-now located in the heterogeneous regime, where it is *re-motivated on a second
-axis — stability* — but not yet cleanly established. A result that names its
-decisive experiments, runs them, reports a pre-committed deflationary outcome
-*and* a wrong prediction of its own without re-spinning either, is more useful
-to the Nested Learning programme than a confident story we had already shown
-ourselves how to falsify. The next paper is the stronger heterogeneous
-benchmark (P2-stronger/P3) that would cleanly establish — or finally bound —
-where cheap local coupling earns its place.
+local rule does not. We then ran the final pre-registered control — a
+heterogeneity *sweep* — and it **triggered its bounding clause**: the
+nested–scalar margin grows monotonically with heterogeneity but seed variance
+inflates in lockstep, so the verbatim rule reads DEGENERATE at every strength
+up to a ~2000:1 per-task condition spread. So the honest, fully-resolved
+position: on Nested Learning's canonical forgetting construction — at any
+scale, and across its entire natural heterogeneous generalization — credit
+assignment is moot; Contribution B is deflated and the deflation is now
+**family-level**, not a single point. The unconditional structural law
+survives but is **explicitly bounded**: it has no demonstrated home anywhere
+in this benchmark family, retaining only an unanticipated stability edge over
+the sometimes-diverging hypergradient. A result that names its decisive
+experiments, runs them, reports a pre-committed deflationary outcome *and*
+several wrong predictions of its own — without re-spinning any of them, and
+refusing to extrapolate the one suggestive trend past its pre-registered grid
+— is more useful to the Nested Learning programme than a confident story we
+had already shown ourselves how to falsify. The next benchmark must leave the
+§4.3/Eq.45 family entirely (P3); until such a non-degenerate benchmark exists
+and passes this same verbatim test, we do not claim cheap local coupling
+matters — only that, where it is ever needed, it is O(1) in the unroll
+horizon and does not diverge.

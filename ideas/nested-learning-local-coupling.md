@@ -263,6 +263,18 @@ divergence guard added to `p1` (orig `--p1` numerically unchanged).
   Critical path now: **P2-stronger** (raise heterogeneity until the
   pre-registered bar is cleanly cleared or bounded) + divergence-rate
   confirmation at higher n + P3.
+- **C-stronger (`--p2-strength 10`, h∈{0..4}) — RESOLVED, bounding clause
+  triggered.** Pre-registered (a) monotone margin, (b) flip at h\*≤4, (c) div↑h.
+  **(a) confirmed; (b),(c) wrong, reported as wrong.** Margin grows
+  0.027→0.169 monotone but pooled inflates in lockstep (margin/pooled
+  0.27→0.91, never crosses 1); DEGENERATE at every h; h=0 sanity DEGENERATE.
+  Not extrapolated past pre-registered grid (~2000:1 cond spread at h=4).
+  ⇒ **§4.3/Eq.45 construction family is robustly optimizer-degenerate**
+  (family-level, not a point). Contribution A: contingent → **explicitly
+  bounded** (no demonstrated home in this family; only a stability edge over
+  the sometimes-diverging hypergradient). **Critical path now: P3 — leave the
+  family entirely**; non-degenerate by the same verbatim test is the
+  precondition for any "structural law matters" claim.
 
 ### Remaining honest caveats after the chain
 - Still a toy (24-d readout, 10 tasks). "Nonlinear" = MLP **combiner/readout**;
