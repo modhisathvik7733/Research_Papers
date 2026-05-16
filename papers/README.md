@@ -11,7 +11,7 @@ Two parts:
    (`<short-name>.md` from `TEMPLATE.md`).
 
 Links are arXiv `abs` pages unless noted. A few classics predate arXiv — venue
-given instead.
+given instead. **Code, libraries, living lists and blogs → [CODE_AND_BLOGS.md](CODE_AND_BLOGS.md).**
 
 ---
 
@@ -101,6 +101,30 @@ given instead.
 - [Graves et al. 2014 — Neural Turing Machines](https://arxiv.org/abs/1410.5401) — external memory; the ancestor of memory-based CL.
 
 ---
+
+## Part 3 — Recent frontier (2025–2026)
+
+These postdate the classics. Read them to find the *gap* — what's still
+unsolved — not to feel behind. Note: arXiv IDs like `25xx`/`26xx` are 2025/2026.
+
+### Most relevant to YOUR exact thesis (forgetting + few-shot + generative)
+- [Behrouz et al. 2025 — Nested Learning: The Illusion of Deep Learning Architectures (Google, NeurIPS 2025)](https://arxiv.org/abs/2512.24695) — proposes the **Hope** continual-learning module; reports gains on **language modeling, knowledge incorporation, AND few-shot generalization** simultaneously. This is the closest published work to your "both at once, generative" target. Read it to locate the gap you can attack, not to despair. Companion: [Google Research blog](https://research.google/blog/introducing-nested-learning-a-new-ml-paradigm-for-continual-learning/).
+- [Bell et al. 2025 — The Future of Continual Learning in the Era of Foundation Models: Three Key Directions](https://arxiv.org/abs/2506.03320) — strategic map of where CL is going when models are huge and pretrained. Read early; it will sharpen your charter's "contribution surface".
+
+### LLM-specific surveys & mechanisms (2025–2026)
+- [2026 — Continual Learning in LLMs: Methods, Challenges, and Opportunities](https://arxiv.org/abs/2603.12658) — survey structured around continual pre-training / fine-tuning / alignment.
+- [2026 — Mechanistic Analysis of Catastrophic Forgetting in LLMs During Continual Fine-tuning](https://arxiv.org/abs/2601.18699) — names three concrete forgetting mechanisms (gradient interference in attention, representational drift, loss-landscape flattening). Directly useful for your experiment design.
+- [Shi et al. 2024/25 — Continual Learning of LLMs: A Comprehensive Survey (CSUR)](https://arxiv.org/abs/2404.16789) — the most-cited LLM-CL survey; has a maintained repo (see CODE file).
+- [2025 — Catastrophic Forgetting in LLMs: A Comparative Analysis Across Language Tasks](https://arxiv.org/abs/2504.01241)
+
+### Sample / data efficiency (the acquisition face, recent)
+- [Sachdeva et al. 2024 — How to Train Data-Efficient LLMs (Ask-LLM / density sampling)](https://arxiv.org/abs/2402.09668) — reject 90% of data, converge ~70% faster. Direct cost lever.
+- [2025 — Improving Data Efficiency for LLM RL Fine-tuning (difficulty-targeted selection + rollout replay)](https://arxiv.org/abs/2506.05316)
+- [MIT News 2026 — method accelerating LLM training 70–210%](https://news.mit.edu/2026/new-method-could-increase-llm-training-efficiency-0226) — blog-level; trace to its paper before trusting numbers.
+
+### Recent meta-CL / online adaptation
+- [2025 — When Meta-Learning Meets Online and Continual Learning: A Survey](https://arxiv.org/pdf/2311.05241) — maps exactly your "bridge" area.
+- [2025 — Continual Learning, Not Training: Online Adaptation for Agents](https://arxiv.org/abs/2511.01093)
 
 ## Skipped (with reason)
 - _(none yet)_

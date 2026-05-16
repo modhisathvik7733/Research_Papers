@@ -22,7 +22,7 @@ Full method in [docs/methodology.md](docs/methodology.md). Read that first.
 
 | Folder           | What goes here                                                        |
 |------------------|-----------------------------------------------------------------------|
-| `papers/`        | One note per paper you actually read. Use `papers/TEMPLATE.md`.        |
+| `papers/`        | Reading list (core path + themed map + 2025–26 frontier), per-paper notes, and `CODE_AND_BLOGS.md` (libraries/blogs). |
 | `ideas/`         | Raw ideas, scored and triaged before they become experiments.         |
 | `experiments/`   | One folder per experiment. Hypothesis → config → log → result.         |
 | `lab_notebook/`  | Dated daily entries. What you did, what you learned, what's next.      |
