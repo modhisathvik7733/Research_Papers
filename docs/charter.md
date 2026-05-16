@@ -6,14 +6,39 @@ proposed activity doesn't serve this, it's a distraction.
 ## The thesis
 
 > Today an LLM is *thrown away and retrained from scratch* whenever the data
-> changes. A 7B retrain costs ~$100k and the energy that implies. If a model
-> could **keep learning new data cheaply without forgetting old data**, that
-> retrain cost largely disappears.
+> changes, and it needs vast repetition to learn anything. A 7B retrain costs
+> ~$100k and the energy that implies. The root cause is one disease:
+> **the model extracts too little structure per example, so it brute-forces
+> generalization with scale and repetition.**
 >
-> **Continual learning without catastrophic forgetting is therefore not a
-> separate goal from cost reduction — it IS the cost-reduction mechanism.**
+> That disease has two faces:
+> - **Temporal — catastrophic forgetting:** it destroys knowledge it already
+>   paid for when it learns something new.
+> - **Acquisition — sample inefficiency:** it needs ~100 examples to grasp a
+>   pattern a human gets in one or two.
+>
+> **Learning efficiency** = maximum generalization per unit of data and
+> compute = the single thing this project attacks. Training cost is the *bill*
+> for inefficiency; reducing it is the consequence, measured every experiment.
 
-This project develops and understands that mechanism.
+This project develops and understands that mechanism — and it must end in a
+model that can **generate coherent text, not just classify**.
+
+## Quality bar (non-negotiable — this is what stops self-deception)
+
+Any efficiency win is only real if quality holds. Therefore:
+
+1. **The end artifact is generative.** "Able to talk, not just understand." Toy
+   classification benchmarks are allowed for *mechanism development only*; the
+   thesis is not validated until the mechanism is shown on a **small generative
+   language model that produces coherent text for its scale**.
+2. **Parity is relative, never absolute.** Quality is judged against a *fair,
+   same-scale, same-data baseline* trained normally — **never against GPT**.
+   Absolute GPT-level fluency is a scale phenomenon and is explicitly out of
+   reach on this hardware; claiming it would be dishonest.
+3. **The bar:** the efficient method must be ≥ the same-scale baseline on
+   fluency and generalization *while* being cheaper / forgetting less. A
+   cheaper-but-dumber model is a failed experiment, not a result.
 
 ## What makes this defensible for a solo researcher
 
@@ -34,19 +59,23 @@ training. The contribution surface that *is* open:
 
 | Decision        | Choice |
 |-----------------|--------|
-| Thrust          | Single: cheap incremental learning w/o forgetting. **Training cost measured explicitly in every experiment.** |
+| Thrust          | Single: **learning efficiency** (forgetting + sample efficiency are two faces of it). **Training cost measured explicitly in every experiment.** |
+| Target regime   | Sequential tasks *with few examples each* ("both at once") is the destination. But experiments isolate ONE face at a time first, then combine. |
 | Scale           | Tiny first (sub-125M / toy), fast loop, 30+ runs/week. Scale up only after a mechanism works small. |
-| Compute         | M1 Max 32GB local for all mechanism work. Rent 1×A100 only for a later transfer-validation run. |
-| Dev domain      | Cheap non-LLM toy CL benchmark first (Split-MNIST class-incremental). Transfer mechanism to small LM only after it works. |
+| Compute         | M1 Max 32GB local for all mechanism work. Rent 1×A100 only for the month-3 generative-LM transfer-validation run. |
+| Dev domain      | Toy classification (Split-MNIST) for mechanism dev. **Final validation is mandatory: a small *generative* LM that produces coherent text.** |
 | Time            | Full-time (30+ hrs/wk). |
-| 3-month success | A *working system*: a model that incrementally learns a sequence of tasks with measured low forgetting AND measured lower cost than from-scratch retrain. |
+| 3-month success | A *working system*: a small **generative** LM that learns a sequence of few-shot tasks with measured low forgetting, measured lower cost than from-scratch retrain, AND text coherence ≥ a same-scale baseline. |
 
 ## Definition of done (3 months)
 
-A runnable pipeline where: given tasks T1…Tk arriving in sequence, the model
-ends with **average accuracy within X of joint training**, **forgetting below
-Y**, at **< Z% of the compute of retraining from scratch each time** — with
-X, Y, Z measured, not asserted, against a reproduced baseline.
+A runnable pipeline where: a **small generative LM** is taught tasks T1…Tk
+arriving in sequence with **few examples per task**, and ends with
+**generalization within X of joint training**, **forgetting below Y**,
+**text coherence ≥ a same-scale normally-trained baseline**, at **< Z% of the
+compute of retraining from scratch each time** — with X, Y, Z and the coherence
+comparison measured, not asserted, against reproduced baselines. Mechanism may
+be developed on toy classification; it is not "done" until shown generative.
 
 ## Non-goals (say no to these)
 
