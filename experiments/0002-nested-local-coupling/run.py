@@ -44,6 +44,12 @@ ETA = 0.05                  # inner learning rate (applied to the produced updat
 # across these orthogonal directions => provable catastrophic forgetting.
 _F = None
 _R = None
+HETERO = False      # set by --p2: break BOTH degeneracy sources of §4.3/Eq.45
+                    #   (1) per-task input covariance C_t -> heterogeneous
+                    #       Hessians Σ_t (not one shared Σ);
+                    #   (2) non-orthogonal correlated task directions r_t.
+                    # Under H-deg this is the construction predicted to make
+                    # credit assignment matter (single scalar should separate).
 
 
 def reseed(seed):
@@ -54,7 +60,11 @@ def reseed(seed):
     np.random.seed(seed)
     g = torch.Generator().manual_seed(7 + seed)
     _F = torch.randn(D_FEAT, D_IN, generator=g) / math.sqrt(D_IN)
-    _R = torch.linalg.qr(torch.randn(D_FEAT, D_FEAT, generator=g))[0][:N_TASKS]
+    if HETERO:                       # P2: NON-orthogonal correlated directions
+        Rr = torch.randn(N_TASKS, D_FEAT, generator=g)
+        _R = Rr / Rr.norm(dim=1, keepdim=True)
+    else:                            # §4.3/Eq.45: orthonormal (degenerate)
+        _R = torch.linalg.qr(torch.randn(D_FEAT, D_FEAT, generator=g))[0][:N_TASKS]
 
 
 reseed(0)  # preserve original single-seed behaviour by default
@@ -87,9 +97,24 @@ def make_task(seed):
         r = torch.randn(D_FEAT, generator=g)
         r = r / r.norm()
 
-    def sample(n):
-        x = torch.randn(n, D_IN)
-        return x, features(x) @ r
+    if HETERO:
+        # P2: per-task anisotropic input transform L_t -> per-task Hessian
+        # Σ_t = E_{x~N(0, L_t L_tᵀ)}[φ(x)φ(x)ᵀ] genuinely differs per task,
+        # while the optimum stays θ*=r_t (y=φ(x)·r_t for any input law), so
+        # the continual problem is well-posed but no single scalar
+        # momentum/decay is simultaneously optimal across curvatures.
+        gc = torch.Generator().manual_seed(5000 + seed)
+        A = torch.randn(D_IN, D_IN, generator=gc) / math.sqrt(D_IN)
+        aniso = 0.3 + 1.7 * torch.rand(D_IN, generator=gc)   # per-task scaling
+        L = A * aniso
+
+        def sample(n):
+            x = torch.randn(n, D_IN) @ L
+            return x, features(x) @ r
+    else:
+        def sample(n):
+            x = torch.randn(n, D_IN)
+            return x, features(x) @ r
 
     return sample
 
@@ -777,18 +802,50 @@ def p1(n):
               f"localPC={Ll:.4f} global={Lg:.4f}")
     A = np.array
     sc, ll, lg = A(sc_), A(ll_), A(lg_)
-    nested_best = np.minimum(ll, lg)
+
+    # --- divergence guard (added 2026-05-17, backward-compatible) ----------
+    # The pre-registered tie test silently averaged losses; on heterogeneous
+    # geometry the global hypergradient can DIVERGE (classic L2O pathology),
+    # and a single 1e23 corrupts mean & pooled std so the tie test passes
+    # vacuously. We treat a run as diverged if non-finite or > 1e3 (on the
+    # §4.3/Eq.45 degenerate benchmark losses are ~0.6 and NOTHING diverges,
+    # so --p1's original output/verdict is unchanged). Divergence rate is a
+    # first-class result about the method, not something to average through.
+    DIV = lambda v: (not np.isfinite(v)) or v > 1e3
+    d_sc = int(sum(DIV(v) for v in sc_))
+    d_ll = int(sum(DIV(v) for v in ll_))
+    d_lg = int(sum(DIV(v) for v in lg_))
+    stable = A([not (DIV(ll_[i]) or DIV(lg_[i]) or DIV(sc_[i]))
+                for i in range(n)])
+    ns = int(stable.sum())
+    scS, llS, lgS = sc[stable], ll[stable], lg[stable]
+    nested_best = np.minimum(llS, lgS) if ns else A([np.nan])
     print("-" * 74)
     print(f"P1 (linear, K={K}, seeds={n})")
-    print(f"  best single-scalar : {sc.mean():.4f} ± {sc.std():.4f}  "
-          f"(β picks: {sorted(set(bbeta_))})")
-    print(f"  local-PC  (K=8)    : {ll.mean():.4f} ± {ll.std():.4f}")
-    print(f"  global    (K=8)    : {lg.mean():.4f} ± {lg.std():.4f}")
-    margin = sc.mean() - nested_best.mean()
-    pooled = float(np.std(np.concatenate([ll, lg])))
-    ties = sc.mean() <= 1.25 * nested_best.mean() and margin <= pooled
-    nest_wins = (sc.mean() > nested_best.mean() + 0.5 * pooled)
-    print(f"  best-scalar − best-nested = {margin:+.4f}  (pooled std≈{pooled:.3f})")
+    print(f"  divergences: scalar={d_sc}/{n}  local-PC={d_ll}/{n}  "
+          f"global={d_lg}/{n}   (stable seeds used for verdict: {ns}/{n})")
+    if ns:
+        print(f"  best single-scalar : {scS.mean():.4f} ± {scS.std():.4f}  "
+              f"med {np.median(scS):.4f}  (β picks: {sorted(set(bbeta_))})")
+        print(f"  local-PC  (K=8)    : {llS.mean():.4f} ± {llS.std():.4f}  "
+              f"med {np.median(llS):.4f}")
+        print(f"  global    (K=8)    : {lgS.mean():.4f} ± {lgS.std():.4f}  "
+              f"med {np.median(lgS):.4f}")
+    margin = (scS.mean() - nested_best.mean()) if ns else float("nan")
+    pooled = float(np.std(np.concatenate([llS, lgS]))) if ns else float("nan")
+    # verdict on the STABLE subset (pre-registered rule, unchanged); global
+    # divergence is reported separately and never silently averaged.
+    ties = ns > 0 and scS.mean() <= 1.25 * nested_best.mean() \
+        and margin <= pooled
+    nest_wins = ns > 0 and scS.mean() > nested_best.mean() + 0.5 * pooled
+    print(f"  best-scalar − best-nested = {margin:+.4f}  "
+          f"(pooled std≈{pooled:.3f}; stable subset)")
+    if d_lg or d_ll:
+        print(f"  ** INSTABILITY: the {'global hypergradient' if d_lg else ''}"
+              f"{' & ' if d_lg and d_ll else ''}"
+              f"{'local-PC' if d_ll else ''} diverged on "
+              f"{max(d_lg, d_ll)}/{n} seeds — a first-class finding: on this "
+              f"geometry nested credit assignment is NOT free/robust.")
     print("-" * 74)
     if ties:
         print("P1 VERDICT: DEGENERATE — a single tuned scalar matches the "
@@ -802,7 +859,53 @@ def p1(n):
     else:
         print("P1 VERDICT: AMBIGUOUS — single scalar neither clearly ties nor "
               "is clearly beaten. Report as inconclusive; do not over-claim B.")
+    if d_lg or d_ll:
+        print("  (NOTE: verdict is on the STABLE subset only. The divergence "
+              "reported above is a SEPARATE, first-class result and must be "
+              "reported alongside the verdict — a 'DEGENERATE'/'MATTERS' label "
+              "on the stable subset does NOT erase that the hypergradient is "
+              "unstable on this geometry.)")
     print(f"total wall time: {time.perf_counter() - t0:.1f}s")
+
+
+def p1_scale(n):
+    """C-scale (§7.6.1). SAME §4.3/Eq.45 construction, ~10x/5x/5x/5x larger.
+    Pre-registered prediction: STAYS DEGENERATE (H-deg says degeneracy is
+    task-geometry, not size). Same p1() decision rule, reused verbatim."""
+    global D_IN, D_FEAT, N_TASKS, STREAM_STEPS
+    D_IN, D_FEAT, N_TASKS, STREAM_STEPS = 64, 256, 50, 600
+    reseed(0)
+    print(f"P1-AT-SCALE: D_in={D_IN} D_feat={D_FEAT} tasks={N_TASKS} "
+          f"stream={STREAM_STEPS} (same orthonormal/shared-Σ geometry)")
+    print("PRE-REGISTERED PREDICTION: stays DEGENERATE\n")
+    p1(n)
+
+
+def p2(n):
+    """C-hetero (§7.6.1) — the decisive control. Break BOTH degeneracy
+    sources at toy size (isolates geometry from scale): per-task input
+    covariance -> heterogeneous Σ_t, AND non-orthogonal correlated r_t.
+    Pre-registered prediction: NESTING MATTERS (single scalar separates).
+    Same p1() decision rule, reused verbatim."""
+    global HETERO
+    HETERO = True
+    reseed(0)
+    print(f"P2 (C-hetero): theta_dim={theta_dim()} tasks={N_TASKS} "
+          f"stream={STREAM_STEPS}; per-task Σ_t + non-orthogonal r_t")
+    print("PRE-REGISTERED PREDICTION: NESTING MATTERS (scalar separates)\n")
+    p1(n)
+
+
+def p2_scale(n):
+    """Both controls combined: heterogeneous geometry AND large scale."""
+    global D_IN, D_FEAT, N_TASKS, STREAM_STEPS, HETERO
+    D_IN, D_FEAT, N_TASKS, STREAM_STEPS = 64, 256, 50, 600
+    HETERO = True
+    reseed(0)
+    print(f"P2-AT-SCALE: D_in={D_IN} D_feat={D_FEAT} tasks={N_TASKS} "
+          f"stream={STREAM_STEPS}; heterogeneous Σ_t + non-orthogonal r_t")
+    print("PRE-REGISTERED PREDICTION: NESTING MATTERS (scalar separates)\n")
+    p1(n)
 
 
 def lambda_sweep(n):
@@ -937,6 +1040,12 @@ if __name__ == "__main__":
     import sys
     if len(sys.argv) > 1 and sys.argv[1] == "--p1":
         p1(int(sys.argv[2]) if len(sys.argv) > 2 else 10)
+    elif len(sys.argv) > 1 and sys.argv[1] == "--p1-scale":
+        p1_scale(int(sys.argv[2]) if len(sys.argv) > 2 else 8)
+    elif len(sys.argv) > 1 and sys.argv[1] == "--p2":
+        p2(int(sys.argv[2]) if len(sys.argv) > 2 else 10)
+    elif len(sys.argv) > 1 and sys.argv[1] == "--p2-scale":
+        p2_scale(int(sys.argv[2]) if len(sys.argv) > 2 else 8)
     elif len(sys.argv) > 1 and sys.argv[1] == "--lambda":
         lambda_sweep(int(sys.argv[2]) if len(sys.argv) > 2 else 8)
     elif len(sys.argv) > 1 and sys.argv[1] == "--lambda-fair":

@@ -89,6 +89,8 @@ node ratio g8/l8 = 5.8x, deterministic across all seeds
 | theory test F3: λ-sweep | `--lambda 8` / `--lambda-fair 8` | **FALSIFIED** — gap *grows* with λ (slope +0.55, wrong sign) even with global LR controlled; Θ(1/λ) premise wrong |
 | theory test F4: interleave | `--interleave 8` | **FALSIFIED as stated** — advantage non-monotone (peaks mid-interleaving). Parity \|g−l\| ≈0.01 across ALL regimes (post-P1: this is the degeneracy showing through, not coupling strength) |
 | **P1 adversarial control** | `--p1 10` | **DEGENERATE** — single tuned scalar ties both local-PC and global (see below) |
+| **C-scale** (pre-registered) | `--p1-scale 8` | predicted DEGENERATE → **CONFIRMED**: same geometry 10×/5×/5×/5× larger still degenerate (sc 0.751 / lpc 0.750 / gl 0.748, margin +0.004, 0/8 div). Degeneracy is geometry, not size. |
+| **C-hetero** (pre-registered) | `--p2 10` | predicted "NESTING MATTERS" → **NOT cleanly confirmed**: verbatim rule still DEGENERATE on 9 stable seeds (margin +0.048 ≤ pooled 0.065). BUT degeneracy breaking (monotone gl 0.704 < lpc 0.729 < sc 0.748; exploratory paired gl<sc 8/9) + **global diverged 1/10** (L2O blow-up, never on canonical geometry). |
 
 ## P1 resolution (the pre-registered control — RUN, DEGENERATE)
 
@@ -127,13 +129,47 @@ credit-assignment "parity" is reported as **deflated by our own control**, not
 as a contribution. Never frame as "matches/beats global" without immediately
 stating a scalar also matches both.
 
+## Scale & heterogeneity controls — RESOLVED (2026-05-17)
+
+Both pre-registered before running; **P1 decision rule reused verbatim** (no
+new goalposts). Added a **divergence guard** to `p1` (a run is diverged if
+loss non-finite or >1e3; counted, never silently averaged) — backward-compatible:
+original `--p1` has 0 divergences and is numerically unchanged (regression-
+checked: 0.617/0.611/0.617 → DEGENERATE, as before).
+
+- **C-scale (`--p1-scale 8`): prediction CONFIRMED.** Same orthonormal/
+  shared-Σ geometry, D_in 64 / D_feat 256 / N_tasks 50 / stream 600. scalar
+  0.751±0.065, local-PC 0.750±0.061, global 0.748±0.061; margin +0.004 ≪
+  pooled 0.061; **0/8 divergences**; DEGENERATE. Scale alone does NOT break
+  degeneracy → H-deg's "geometry not size" premise survives a falsification
+  test; the "just scale up" objection is answered.
+- **C-hetero (`--p2 10`): prediction NOT cleanly confirmed; degeneracy
+  breaking; instability finding.** Per-task input covariance (heterogeneous
+  Σ_t) + non-orthogonal correlated r_t, toy size. Verbatim rule on 9 stable
+  seeds still **DEGENERATE** (sc 0.748 / lpc 0.729 / gl 0.704; margin +0.048 ≤
+  pooled 0.065) — my prediction of clean separation was **wrong, reported as
+  wrong**. But: (i) monotone ordering global < local-PC < scalar emerges
+  (absent on toy where all ≈0.617); (ii) *exploratory, non-pre-registered*
+  paired sign test: global < scalar on **8/9** stable seeds (≈p0.02);
+  (iii) **global hypergradient diverged 1/10** (1.08e23 — L2O pathology),
+  while local-PC and scalar never diverged.
+
+**Synthesis:** §4.3/Eq.45 degeneracy is **scale-robust** and only **partially
+lifted by strong heterogeneity** — a deep property, not a small-scale artifact.
+The one regime where credit assignment starts to matter is exactly where the
+expensive hypergradient is unstable and the cheap O(1) local rule is not →
+Contribution A re-motivated on a **second axis (stability)**; Contribution B
+stays deflated by the governing verdict.
+
 ## Remaining (now the critical path)
 
-1. **P2** — does parity/degeneracy break as task heterogeneity (per-task
-   Hessians, correlated structure) raises effective dimension? This is the
-   non-degenerate benchmark the structural law needs to matter.
+1. **P2-stronger** — raise heterogeneity strength until the pre-registered
+   separation bar is *cleanly* cleared (or bound where it cannot be). C-hetero
+   shows the direction; this pins the regime.
 2. **P3** — bias–variance crossover where genuine long-horizon credit is
    required (global should overtake scalar there).
-3. Real-d demonstration converting the proven graph-memory law into an actual
+3. **Divergence-rate confirmation** — the 1/10 global blow-up is first-class
+   but n=10; confirm the rate at higher n.
+4. Real-d demonstration converting the proven graph-memory law into an actual
    OOM/timeout (extrapolation only so far).
-4. Deep-MLP *per level* (currently tanh-per-level + MLP combiner).
+5. Deep-MLP *per level* (currently tanh-per-level + MLP combiner).

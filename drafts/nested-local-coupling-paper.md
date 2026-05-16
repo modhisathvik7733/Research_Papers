@@ -1,13 +1,17 @@
 # Nested Learning's Canonical Forgetting Benchmark Is Optimizer-Degenerate: A Single Scalar Matches Both Local Coupling and the Hypergradient
 
-*Working draft — workshop length. Status: resolved, deflationary. The
-pre-registered adversarial control (P1) has been run and returned
-**DEGENERATE**. The paper is reframed accordingly: the empirical
-credit-assignment contribution is **deflated by our own control** and reported
-as such; one **unconditional structural law** survives but its motivation is
-explicitly weakened pending a non-degenerate benchmark. All numbers are 10-seed
-CPU runs reproducible from a single script (see Reproducibility). No claim is
-softened.*
+*Working draft — workshop length. Status: resolved, deflationary, with both
+follow-up controls run. The pre-registered adversarial control (P1) returned
+**DEGENERATE**; the pre-registered **scale** control confirmed degeneracy is
+scale-robust (prediction held); the pre-registered **heterogeneity** control
+did **not** cleanly confirm its prediction but showed the degeneracy breaking
+and surfaced a hypergradient-**instability** finding. The credit-assignment
+contribution is **deflated by our own control** and reported as such; one
+**unconditional structural law** survives, its significance now located in the
+heterogeneous regime where it also gains a stability advantage. All numbers are
+8–10-seed CPU runs reproducible from a single script (see Reproducibility). No
+claim is softened; one of our own pre-registered predictions was wrong and is
+reported as wrong.*
 
 ---
 
@@ -46,13 +50,24 @@ methods at all. This is **not** "our cheap rule loses": it equally indicts the
 expensive HOPE/Titans-style hypergradient, which also buys nothing over a
 tuned scalar on Nested Learning's own canonical forgetting benchmark. The
 surviving contribution is the **structural law alone** (O(1) vs O(H),
-unconditional); its motivation is now explicitly contingent — a
-memory-cheaper way to do something that does not matter on this benchmark
-needs a non-degenerate benchmark to be worth anything. We present this as a
-bounded, honest result: a solid structural law, a benchmark-degeneracy finding
-that reframes (and arguably is more interesting than) the original
-credit-assignment story, and a clear statement of the different paper this has
-become.
+unconditional). We then ran two further pre-registered controls. A **scale**
+control (same geometry, 10×/5×/5×/5× larger) **confirmed** its prediction:
+degeneracy is scale-robust (scalar 0.751, local-PC 0.750, global 0.748, 0/8
+divergences) — the "just scale up" objection is answered by our own control. A
+**heterogeneity** control (per-task Hessians + non-orthogonal task directions)
+did **not** cleanly confirm its prediction — by the verbatim rule it still
+reads degenerate — but the degeneracy is visibly breaking (monotone global
+0.704 < local-PC 0.729 < scalar 0.748; exploratory paired test global < scalar
+on 8/9 stable seeds) and, critically, the **global hypergradient diverged on
+1/10 seeds** in exactly this regime while the cheap O(1) local rule stayed
+stable. Net: the canonical benchmark's deflation of the credit-assignment
+contribution is real and scale-robust; the structural law's significance is
+located in the heterogeneous regime, where it gains an unanticipated second
+advantage — stability — over the hypergradient. We present this as a bounded,
+honest result in which one of our own pre-registered predictions was wrong and
+is reported as wrong: a solid structural law, a scale-robust
+benchmark-degeneracy finding, and a sharpened map of where (and why) cheap
+local coupling would actually matter.
 
 ---
 
@@ -284,6 +299,66 @@ DEGENERATE.**
 This is the deflationary outcome we explicitly built P1 to detect and
 pre-committed to reporting. We report it straight, not softened.
 
+### 5.7 Pre-registered scale and heterogeneity controls (resolved)
+
+We pre-registered two controls (§7.6.1) with the **P1 decision rule reused
+verbatim** and a divergence guard added to the harness (a run is *diverged* if
+its loss is non-finite or > 1e3; divergence is counted and reported, never
+silently averaged — backward-compatible: the §5.6 / `--p1` run has zero
+divergences and is numerically unchanged).
+
+**C-scale — same §4.3/Eq. 45 geometry, ~10×/5×/5×/5× larger
+(D_in 64, D_feat 256, N_tasks 50, stream 600), 8 seeds.** *Pre-registered
+prediction: stays DEGENERATE.* **Confirmed, cleanly:** scalar 0.7512 ± 0.065,
+local-PC 0.7504 ± 0.061, global 0.7475 ± 0.061; margin +0.004 ≪ pooled 0.061;
+**0/8 divergences**; verdict DEGENERATE. Scale alone does not break the
+degeneracy — H-deg's "geometry, not size" premise survives a direct
+falsification test, and the "just scale up" objection is answered by our own
+pre-registered control.
+
+**C-hetero — both degeneracy sources broken at toy size (per-task input
+covariance ⇒ heterogeneous Hessians Σ_t; non-orthogonal correlated r_t),
+10 seeds.** *Pre-registered prediction: NESTING MATTERS — the single scalar
+separates.* **Outcome: prediction NOT cleanly confirmed, but degeneracy is
+demonstrably breaking, plus a first-class instability finding.**
+
+| (C-hetero, K=8) | final loss (stable seeds) |
+|---|---|
+| best single scalar | 0.7483 ± 0.068 (med 0.768) |
+| local-PC | 0.7285 ± 0.065 (med 0.756) |
+| global | 0.7044 ± 0.063 (med 0.715) |
+
+1. **The verbatim pre-registered aggregate rule still reads DEGENERATE** on the
+   9 stable seeds: mean scalar−nested margin +0.048 is still ≤ pooled std
+   0.065. We report this as the governing verdict; our prediction of clean
+   separation was wrong and we do not spin it.
+2. **But the degeneracy is clearly breaking, not intact.** On the toy all
+   three methods are interchangeable (≈0.617, §5.6); under heterogeneity a
+   **monotone ordering global < local-PC < scalar** emerges. An *exploratory,
+   non-pre-registered* paired per-seed sign test shows global beats the tuned
+   scalar on **8/9 stable seeds** (≈ p0.02). Heterogeneity does start to make
+   credit assignment matter — just not enough to clear the blunt aggregate bar
+   at this heterogeneity strength. We label this exploratory; the
+   pre-registered rule governs the headline.
+3. **First-class instability finding (the divergence guard caught it).** The
+   global hypergradient **diverged on 1/10 seeds** (loss 1.08e23 — the
+   documented L2O blow-up), which **never occurs** on the orthonormal/shared-Σ
+   geometry (0 divergences in §5.6 and in C-scale). The scalar and local-PC
+   never diverged. So in the regime where nesting *begins* to help, the
+   *expensive* hypergradient becomes unstable, while the *cheap, O(1)*
+   local-PC is stable and tracks global's improvement (it sits strictly
+   between scalar and global on every aggregate).
+
+**Synthesis.** The §4.3/Eq. 45 degeneracy is **robust to scale** (C-scale,
+clean) and **only partially lifted by strong task heterogeneity** (C-hetero:
+real directional signal, not clearing the pre-registered bar). It is therefore
+a *deep* property of the construction, not a small-scale artifact. And the one
+regime where credit assignment starts to matter is exactly the regime where
+the expensive hypergradient is unstable and the cheap O(1) local rule is not —
+which **re-motivates Contribution A on a second axis (stability), not just
+memory**, without rescuing Contribution B (still deflated by the governing
+verdict).
+
 ---
 
 ## 6. What we claim and what we do not — after P1
@@ -322,8 +397,11 @@ paper than "a cheaper credit rule."
 **We do not claim.** (i) Superiority. (ii) That local-PC's quality parity is
 evidence for the method — P1 removed that reading. (iii) A demonstrated
 hardware failure (extrapolation from the O(H·K·d) law). (iv) Any result beyond
-a 24-d, 10-task toy. (v) That the structural law matters *yet* — that requires
-a non-degenerate benchmark (P2/P3, §7.6).
+a 24-d, 10-task toy. (v) That the structural law matters *yet* — credit
+assignment is scale-robustly moot on the canonical geometry (C-scale, §5.7);
+it begins to matter only under heterogeneity (C-hetero, §5.7), where the
+structural law's significance is now located but not yet cleanly established
+(the pre-registered separation bar was not cleared; P2-stronger/P3 remain).
 
 ---
 
@@ -418,13 +496,67 @@ This resolves the paper's central uncertainty in the deflationary direction we
 named in advance. It is the *more interesting* outcome: it is not a result
 about our method losing, it is a result about **Nested Learning's canonical
 forgetting benchmark being unable to support any argument about optimizers or
-nesting**. Two further predictions locate the regime boundary the paper now
-needs: **P2** — parity (and degeneracy) should break as task heterogeneity
-(per-task Hessians, correlated structure) raises the effective dimension;
-**P3** — a bias–variance crossover where genuine long-horizon credit is
-required. **P2/P3 are now the critical path**: the structural law (§6A) only
-becomes worth anything on a benchmark where the credit assignment it cheapens
-actually matters. Constructing that benchmark is the natural next paper.
+nesting**.
+
+#### 7.6.1 Pre-registered scale and heterogeneity controls (predictions fixed before running)
+
+The natural objection is "the toy is degenerate; scale escapes it." We reject
+the premise *in advance* and pre-register it: under H-deg, degeneracy is a
+property of the **task geometry** (shared Hessian Σ, orthonormal optima
+r_i), not of dimension or task count. We register two controls and their
+decision rule. **Decision rule = the exact P1 rule, reused verbatim** (DEGENERATE
+if best-scalar ≤ 1.25× best-nested and the scalar−nested margin ≤ the pooled
+nested std; NESTING MATTERS if best-scalar > best-nested + 0.5× pooled std;
+else AMBIGUOUS). No new goalposts.
+
+- **C-scale (P1-at-scale).** Same §4.3/Eq. 45 construction, large
+  (D_in, D_feat, N_tasks, stream) ≈ 10×/5×/5×/5× the toy. *Pre-registered
+  prediction: stays **DEGENERATE**.* This is a falsification check of H-deg
+  itself: if scale alone broke degeneracy, H-deg is wrong (a major result we
+  would report as such). It is *not* expected to rescue Contribution B.
+
+- **C-hetero (P2, the decisive one).** Break both degeneracy sources:
+  per-task input covariance C_t (genuinely **heterogeneous Hessians Σ_t**) and
+  **non-orthogonal, correlated** task directions r_t (random unit, no QR), at
+  the *same* toy size (isolates geometry from scale). *Pre-registered
+  prediction: **NESTING MATTERS** — the single scalar separates (best-scalar
+  clearly worse than best-nested), because no one momentum/decay constant is
+  simultaneously optimal across heterogeneous curvatures.* If instead it
+  returns DEGENERATE, that is a strong negative for the nesting programme
+  (nesting buys nothing even off the degenerate geometry) — equally
+  publishable, reported straight either way.
+
+The structural law (§6A) only becomes worth anything if C-hetero shows a
+regime where the credit assignment it cheapens actually matters; **P3** (a
+bias–variance crossover at long horizons) remains as future work to locate
+the boundary precisely.
+
+#### 7.6.2 Resolution (both controls run; reported straight)
+
+**C-scale → DEGENERATE, prediction confirmed (§5.7).** H-deg's premise that
+degeneracy is task-geometry, not dimension/count, survived a direct
+falsification test: 10×/5×/5×/5× scale-up of the same geometry stays cleanly
+degenerate (margin +0.004, 0/8 divergences). The deflation of Contribution B
+is *not* a small-scale artifact.
+
+**C-hetero → prediction not cleanly confirmed; degeneracy breaking; new
+instability finding (§5.7).** Our pre-registered prediction ("NESTING MATTERS,
+scalar separates") was **wrong as a clean call**: the verbatim rule still reads
+DEGENERATE on the 9 stable seeds (margin +0.048 ≤ pooled 0.065). We report the
+miss plainly. What the control *did* establish: (i) the degeneracy is breaking
+— a monotone global < local-PC < scalar ordering emerges and an exploratory
+paired test gives global < scalar on 8/9 stable seeds — so credit assignment
+is weakly, genuinely non-moot under heterogeneity, contradicting a strong-form
+H-deg that would predict perfect degeneracy everywhere; (ii) the global
+hypergradient **diverges (1/10)** exactly in this regime while local-PC does
+not. H-deg therefore holds in its *geometry-specific* form (degenerate on the
+canonical orthonormal/shared-Σ construction, at any scale) but **not** in a
+strong universal form (heterogeneity starts to lift it). The honest net: the
+canonical benchmark's deflation of Contribution B stands and is scale-robust;
+Contribution A's significance is now located in the heterogeneous regime,
+where it gains a second, unanticipated axis — stability — over the
+hypergradient. **P2-stronger** (raise heterogeneity until the pre-registered
+bar is cleared) and **P3** are the remaining boundary-locating work.
 
 ---
 
@@ -435,9 +567,21 @@ actually matters. Constructing that benchmark is the natural next paper.
   scalar matches both local-PC and the hypergradient. Contribution B does not
   stand as evidence for the method; it stands as evidence the benchmark is
   optimizer-degenerate.
-- **The structural law's motivation is contingent.** §6A (O(1) vs O(H)) is an
-  exact, unconditional measurement, but cheapening a credit assignment that is
-  moot on this benchmark only matters on a non-degenerate one (P2/P3, unrun).
+- **The structural law's motivation is contingent and only partially
+  resolved.** §6A (O(1) vs O(H)) is exact and unconditional, but it matters
+  only where credit assignment does. C-scale (§5.7) shows the canonical
+  geometry is scale-robustly degenerate; C-hetero (§5.7) shows heterogeneity
+  *begins* to lift this but **did not clear our pre-registered separation bar**
+  — so the regime where the law matters is identified but not yet cleanly
+  demonstrated (P2-stronger/P3 remain).
+- **One of our pre-registered predictions was wrong.** C-hetero was predicted
+  to show clean "NESTING MATTERS"; it did not (still degenerate by the verbatim
+  rule). Reported as a miss, not re-interpreted into a success. The supporting
+  8/9 paired result is exploratory and explicitly *not* pre-registered.
+- **Hypergradient instability is a finding, with a small-n caveat.** Global
+  diverged on 1/10 C-hetero seeds (the L2O pathology); local-PC/scalar did
+  not. This is first-class but is a single divergence at n=10 — the *rate* is
+  not precisely estimated and warrants a higher-n confirmation.
 - **No working theory of the surviving regime.** Only §7.1 (an identity) is
   settled; both conjectures on it are falsified; H-deg is confirmed *as a
   degeneracy*, which is a statement about the benchmark, not a constructive
@@ -489,10 +633,18 @@ Single self-contained script, CPU, deterministic, no external data:
 - `python run.py --interleave 8` — §7.3 (F4, falsified) / §7.4
 - `python run.py --p1 10` — **§5.6 / §7.6 (P1 adversarial control:
   returns DEGENERATE)**
+- `python run.py --p1-scale 8` — **§5.7 / §7.6.1 C-scale (predicted &
+  confirmed DEGENERATE; ≈9 min)**
+- `python run.py --p2 10` — **§5.7 / §7.6.1 C-hetero (heterogeneous Σ_t +
+  non-orthogonal r_t; verbatim rule → DEGENERATE on stable subset; reports
+  1/10 global divergence)**
+- `python run.py --p2-scale 8` — C-hetero at scale (both controls combined)
 
-Each sweep runs in ≈5–40 s on an Apple M1 Max; pre-registered criteria, the
-P1 decision rule, and per-seed logs are emitted by the script. **P1 is
-implemented and run; its DEGENERATE verdict is reproducible.**
+Sweeps run in ≈5–40 s on an Apple M1 Max (C-scale ≈9 min). Pre-registered
+criteria, the (verbatim, reused) P1 decision rule, the divergence guard, and
+per-seed logs are emitted by the script. **All three controls (P1, C-scale,
+C-hetero) are implemented and run; the original `--p1` output is numerically
+unchanged by the divergence guard (0 divergences on the canonical geometry).**
 
 ---
 
@@ -515,9 +667,22 @@ unconditional but its motivation is contingent on a benchmark where credit
 assignment is not moot; and §4.3/Eq. 45 — Nested Learning's canonical forgetting
 construction — is **optimizer-degenerate**, unable to support any claim that
 nesting or sophisticated credit assignment helps continual learning, for our
-method or for HOPE's hypergradient alike. A result that names the experiment
-that would decide it, runs it, and reports a deflationary outcome it
-pre-committed to is more useful to the Nested Learning programme than a
-confident credit-assignment story we had already shown ourselves how to
-falsify. The next paper is the non-degenerate benchmark (P2/P3) on which the
-surviving structural law would actually matter.
+method or for HOPE's hypergradient alike. We then pre-registered two further
+controls and ran both. The **scale** control confirmed its prediction: the
+degeneracy is scale-robust, not a small-toy artifact — answering the obvious
+"just scale up" objection with our own control. The **heterogeneity** control
+**did not confirm its prediction** — we report that miss plainly — but it
+showed the degeneracy genuinely breaking once tasks have heterogeneous
+curvature, and it surfaced an unanticipated finding: in exactly that regime the
+*expensive* hypergradient becomes unstable (diverges) while the *cheap, O(1)*
+local rule does not. So the honest, sharpened position: on Nested Learning's
+canonical forgetting construction (at any scale) credit assignment is moot and
+Contribution B stays deflated; the surviving structural law's significance is
+now located in the heterogeneous regime, where it is *re-motivated on a second
+axis — stability* — but not yet cleanly established. A result that names its
+decisive experiments, runs them, reports a pre-committed deflationary outcome
+*and* a wrong prediction of its own without re-spinning either, is more useful
+to the Nested Learning programme than a confident story we had already shown
+ourselves how to falsify. The next paper is the stronger heterogeneous
+benchmark (P2-stronger/P3) that would cleanly establish — or finally bound —
+where cheap local coupling earns its place.

@@ -242,6 +242,28 @@ crossover at long horizons) where credit assignment is NOT moot, so the
 surviving structural law has something to matter for. Resolved in draft §5.6
 + §6 + §7.6 + §11.
 
+### Scale & heterogeneity controls RESOLVED (2026-05-17)
+Both pre-registered (P1 rule reused verbatim) + a backward-compatible
+divergence guard added to `p1` (orig `--p1` numerically unchanged).
+- **C-scale (`--p1-scale 8`) — prediction CONFIRMED, clean DEGENERATE.** Same
+  geometry 10×/5×/5×/5× larger: sc 0.751 / lpc 0.750 / gl 0.748, margin
+  +0.004, 0/8 div. **Degeneracy is geometry, not size** — H-deg premise
+  survives a falsification test; "just scale up" objection dead.
+- **C-hetero (`--p2 10`) — prediction NOT cleanly confirmed (reported as a
+  miss); degeneracy breaking + instability finding.** Verbatim rule still
+  DEGENERATE on 9 stable seeds (sc 0.748 / lpc 0.729 / gl 0.704; margin +0.048
+  ≤ pooled 0.065). But monotone ordering gl<lpc<sc emerges (absent on toy);
+  exploratory paired gl<sc on 8/9; **global diverged 1/10** (L2O blow-up) while
+  local-PC/scalar never did.
+- **Synthesis:** canonical degeneracy is *scale-robust* and only *partially*
+  lifted by strong heterogeneity (deep, not artifact). The regime where credit
+  assignment starts to matter is exactly where the expensive hypergradient is
+  unstable and the cheap O(1) local rule is not ⇒ Contribution A re-motivated
+  on a **second axis (stability)**; Contribution B stays deflated.
+  Critical path now: **P2-stronger** (raise heterogeneity until the
+  pre-registered bar is cleanly cleared or bounded) + divergence-rate
+  confirmation at higher n + P3.
+
 ### Remaining honest caveats after the chain
 - Still a toy (24-d readout, 10 tasks). "Nonlinear" = MLP **combiner/readout**;
   per-level recurrence is still linear — deep per-level nonlinear memory
