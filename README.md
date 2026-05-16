@@ -40,8 +40,11 @@ Full method in [docs/methodology.md](docs/methodology.md). Read that first.
 
 ## Setup
 
+Full guide incl. Apple-Silicon gotchas: [docs/setup.md](docs/setup.md).
+
 ```bash
-uv sync                      # create env from pyproject.toml
+uv sync                      # base: reading/notes/design
+uv sync --extra experiments  # adds torch + avalanche-lib + jupyterlab
 uv run python -c "import researchkit; print(researchkit.__version__)"
 ```
 

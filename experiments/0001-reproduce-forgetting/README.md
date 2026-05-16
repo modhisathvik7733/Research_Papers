@@ -44,8 +44,15 @@ understand the phenomenon.)
 
 ## Run
 ```bash
-# filled in once the design is operationalized (after paper reading)
+# from repo root, one-time:
+uv sync --extra experiments            # see docs/setup.md
+# then:
+uv run jupyter lab experiments/0001-reproduce-forgetting/run.ipynb
 ```
+The notebook (`run.ipynb`) refuses to run until you fill the pre-registration
+gate. It tests H1 (task-1 drop ≥ 40 pts) and H2 (joint ≥ 3× sequential cost)
+using Avalanche's Split-MNIST + Naive/JointTraining so the baseline is a known,
+reproducible one — not hand-rolled.
 
 ## Results (raw)
 _pending_
