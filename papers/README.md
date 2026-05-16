@@ -1,13 +1,22 @@
 # Reading list
 
-One row per paper. Triage ruthlessly — most papers get a one-line "skipped
-because". Promote a paper to its own note (`<short-name>.md` from `TEMPLATE.md`)
-only when you've done Pass 2.
+One row per paper. Triage ruthlessly. Promote a paper to its own note
+(`<short-name>.md` from `TEMPLATE.md`) only when you've done Pass 2.
 
-| Paper | Why it's here | Status | Note |
-|-------|---------------|--------|------|
-| _example: DiffuLLaMA_ | diffusion adaptation of AR LLMs | queued | — |
+Queue is ordered. Read top-down. Don't skip ahead — each unlocks the next.
+
+| # | Paper | Why it's here (re: charter) | Status | Note |
+|---|-------|-----------------------------|--------|------|
+| 1 | **Kirkpatrick et al. 2017 — "Overcoming catastrophic forgetting in neural networks" (EWC)** | The canonical statement of the problem + the regularization approach. You must understand forgetting before any method. | queued | — |
+| 2 | **Lopez-Paz & Ranzato 2017 — "Gradient Episodic Memory" (GEM)** | Introduces the standard CL metrics you will use forever: Average Accuracy, **Backward Transfer (forgetting)**, Forward Transfer. Read it for the metrics as much as the method. | queued | — |
+| 3 | **Prabhu et al. 2020 — "GDumb: A Simple Approach that Questions Our Progress in Continual Learning"** | A deliberately dumb buffer+retrain baseline that beats many sophisticated CL methods. Read this early so you stay skeptical of complexity — directly serves the "cost vs. naive retrain" framing. | queued | — |
+| 4 | **A recent continual-learning survey (e.g. De Lange et al. 2021 / Wang et al. 2024)** | Map the method families (regularization / replay / parameter-isolation) so you know what's been tried and where the cost angle is unexplored. | queued | — |
 
 ## Skipped (with reason)
 
-- _example: PaperX — skipped, requires 64×A100, not reproducible on my hardware._
+- _(none yet)_
+
+## Reading rule
+
+For papers 1–3 you must reach **Pass 3** (could-I-reproduce-it). They are short
+and foundational. The survey is Pass 2 only — it's a map, not a method.

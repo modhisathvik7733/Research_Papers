@@ -1,0 +1,25 @@
+experiment: 0001-reproduce-forgetting
+seed: 0
+
+baseline:
+  name: "joint training on union of all 5 Split-MNIST tasks (the no-forgetting reference)"
+  expected_metric: null   # to be set: joint-training average accuracy
+
+variant:
+  changed: "training regime: sequential (one task at a time) instead of joint"
+  params:
+    benchmark: split-mnist
+    n_tasks: 5
+    classes_per_task: 2
+    setting: class-incremental
+    arch: tbd-after-reading   # small MLP or small CNN; decide from paper 1
+    epochs_per_task: tbd
+    optimizer: tbd
+
+data:
+  name: MNIST
+  subsample: null   # MNIST is already tiny; full set is fine on M1
+
+eval:
+  metric: "average_accuracy, backward_transfer (GEM defs), wallclock_s, update_steps"
+  decision_rule: "H1: task1 acc drop >= 40 pts after task 5; H2: joint/seq wallclock >= 3x"
