@@ -24,6 +24,11 @@ proposed activity doesn't serve this, it's a distraction.
 This project develops and understands that mechanism — and it must end in a
 model that can **generate coherent text, not just classify**.
 
+> Most of this capability is ~80–90% already implemented (closest: Google's
+> Nested Learning/Hope). That is normal, not fatal. The defensible residual —
+> cost-honest, reproducible evidence at verifiable scale — is analyzed in
+> [prior_art.md](prior_art.md). Read it with this charter.
+
 ## Quality bar (non-negotiable — this is what stops self-deception)
 
 Any efficiency win is only real if quality holds. Therefore:
