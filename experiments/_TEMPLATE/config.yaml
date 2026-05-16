@@ -1,0 +1,20 @@
+# Single source of truth for this experiment. The run reads ONLY this file so
+# the experiment is reproducible from config + commit + seed alone.
+experiment: NNNN-short-name
+seed: 0
+
+baseline:
+  name: ""          # what we compare against
+  expected_metric: null   # the number we must reproduce first
+
+variant:
+  changed: ""       # the ONE thing different from baseline
+  params: {}
+
+data:
+  name: ""
+  subsample: null   # use the smallest split that gives signal
+
+eval:
+  metric: ""
+  decision_rule: "" # e.g. "variant_metric >= baseline_metric - 1.0"

@@ -1,0 +1,24 @@
+# env
+.venv/
+__pycache__/
+*.py[cod]
+.uv/
+uv.lock
+
+# research outputs — runs are reproducible from config+commit+seed, not stored
+runs/
+outputs/
+wandb/
+*.ckpt
+*.pt
+*.safetensors
+
+# data — never commit datasets; record how to fetch them in the experiment
+data/
+*.csv
+*.parquet
+
+# os / editor
+.DS_Store
+.idea/
+.vscode/
