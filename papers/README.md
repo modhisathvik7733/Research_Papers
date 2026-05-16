@@ -100,6 +100,32 @@ given instead. **Code, libraries, living lists and blogs → [CODE_AND_BLOGS.md]
 - [Munkhdalai et al. 2024 — Infini-attention](https://arxiv.org/abs/2404.07143)
 - [Graves et al. 2014 — Neural Turing Machines](https://arxiv.org/abs/1410.5401) — external memory; the ancestor of memory-based CL.
 
+### L. Weight dynamics — how weights change, fast weights, plasticity, merging
+*Core mechanism. Forgetting IS a weight-change problem; understanding how/why weights move is upstream of every method here.*
+- [Schmidhuber 1992 — Learning to Control Fast-Weight Memories](https://doi.org/10.1162/neco.1992.4.1.131) — origin of fast weights / weights-that-write-weights. *(Neural Computation; no arXiv.)*
+- [Ba et al. 2016 — Using Fast Weights to Attend to the Recent Past](https://arxiv.org/abs/1610.06258)
+- [Ha et al. 2016 — HyperNetworks](https://arxiv.org/abs/1609.09106) — a net that generates another net's weights.
+- [von Oswald et al. 2019 — Continual Learning with Hypernetworks](https://arxiv.org/abs/1906.00695) — directly on-thesis: generate task weights instead of overwriting.
+- [Miconi et al. 2018 — Differentiable Plasticity](https://arxiv.org/abs/1804.02464) · [Miconi et al. 2020 — Backpropamine (neuromodulated plasticity)](https://arxiv.org/abs/2002.10585) — meta-learn *how* weights should change.
+- [Jacot et al. 2018 — Neural Tangent Kernel](https://arxiv.org/abs/1806.07572) — theory of weight dynamics under gradient descent.
+- [Garipov et al. 2018 — Mode Connectivity & Fast Ensembling](https://arxiv.org/abs/1802.10026) · [Frankle et al. 2020 — Linear Mode Connectivity & the Lottery Ticket](https://arxiv.org/abs/1912.05671) · [Mirzadeh et al. 2020 — Linear Mode Connectivity in Continual Learning](https://arxiv.org/abs/2010.04495) — the geometry of *where* weights can move without breaking old tasks. The last one is squarely your problem.
+- [Aghajanyan et al. 2020 — Intrinsic Dimensionality of Fine-tuning](https://arxiv.org/abs/2012.13255) — why tiny weight changes suffice; motivates LoRA-style isolation.
+- [Ilharco et al. 2022 — Task Arithmetic (task vectors)](https://arxiv.org/abs/2212.04089) · [Wortsman et al. 2022 — Model Soups](https://arxiv.org/abs/2203.05482) · [Matena & Raffel 2021 — Fisher-Weighted Model Merging](https://arxiv.org/abs/2111.09832) — adding knowledge by *arithmetic on weights* instead of retraining. Direct cost lever.
+
+### M. Diffusion models *(lower priority — your generative bar + prior context; do NOT rabbit-hole here)*
+*Relevance: the quality bar is generative, generative replay uses these, and you have prior diffusion-LM context. Read only if an experiment pulls you here.*
+- [Sohl-Dickstein et al. 2015 — Nonequilibrium Thermodynamics (origin)](https://arxiv.org/abs/1503.03585) · [Ho et al. 2020 — DDPM](https://arxiv.org/abs/2006.11239) · [Song et al. 2020 — Score-based SDE](https://arxiv.org/abs/2011.13456) · [Karras et al. 2022 — EDM (design space)](https://arxiv.org/abs/2206.00364)
+- [Rombach et al. 2021 — Latent Diffusion / Stable Diffusion](https://arxiv.org/abs/2112.10752)
+- Diffusion **language** models (ties to your old DreamOn/Open-dLLM work): [Austin et al. 2021 — D3PM](https://arxiv.org/abs/2107.03006) · [Li et al. 2022 — Diffusion-LM](https://arxiv.org/abs/2205.14217) · [Lou et al. 2023 — SEDD](https://arxiv.org/abs/2310.16834) · [Sahoo et al. 2024 — MDLM](https://arxiv.org/abs/2406.07524) · [Nie et al. 2025 — LLaDA](https://arxiv.org/abs/2502.09992)
+
+### N. Symbolic / neuro-symbolic / program induction
+*Of these three groups, THIS is the most thesis-relevant to the acquisition face. Humans learn a rule from one example because they induce a program/symbolic structure — not because they do better gradient descent. This is the deep version of "understand a pattern from one example".*
+- [Lake et al. 2015 — Human-level concept learning via probabilistic program induction (BPL)](https://doi.org/10.1126/science.aab3050) — one-shot learning by program induction. *(Science; no arXiv.)* Pair with [Lake et al. 2016 (group H)](https://arxiv.org/abs/1604.00289).
+- [Chollet 2019 — On the Measure of Intelligence (ARC)](https://arxiv.org/abs/1911.01547) — defines intelligence as skill-acquisition *efficiency*. This is almost a formal statement of your thesis. Read early.
+- [Ellis et al. 2020 — DreamCoder](https://arxiv.org/abs/2006.08381) — learns reusable concept libraries; sample-efficient by construction.
+- [Mao et al. 2019 — Neuro-Symbolic Concept Learner](https://arxiv.org/abs/1904.12584) · [Evans & Grefenstette 2017 — Learning Explanatory Rules (∂ILP)](https://arxiv.org/abs/1711.04574) · [Garcez & Lamb 2020 — Neurosymbolic AI: The 3rd Wave](https://arxiv.org/abs/2012.05876)
+- [Lake & Baroni 2017 — SCAN: systematic compositional generalization](https://arxiv.org/abs/1711.00350) — the benchmark that exposes how badly nets generalize from few examples. Good cheap probe for you.
+
 ---
 
 ## Part 3 — Recent frontier (2025–2026)
