@@ -13,19 +13,25 @@ OUT="${OUT:-$HERE/out_${MODE}}"
 cd "$SMF_DIR"
 mkdir -p "$OUT"
 
-# --- A100-80GB throughput knobs (all verified train_sparse args) ----------
-# 0.5B base, only ~44M trainable (sparse) -> activations dominate; bs is
-# very safe to push. WATCH `nvidia-smi`: if VRAM < ~60GB and util < ~85%,
-# raise PD_TRAIN/PD_EVAL (2x at a time). bf16 + TF32 (sitecustomize) on.
-PD_TRAIN="${PD_TRAIN:-128}"      # per-device train batch (try 256 if headroom)
-PD_EVAL="${PD_EVAL:-256}"        # eval is forward-only -> larger
-GA="${GA:-1}"                    # no accumulation: keep the GPU continuously fed
-NPROC="${NPROC:-16}"             # CPU workers for tokenize/filter/background-DF
-DLW="${DLW:-8}"                  # dataloader workers
-BG_BS="${BG_BS:-64}"            # *** the big one: background-DF was bs=1 ***
+# --- A100 throughput knobs (verified train_sparse args) -------------------
+# MEMORY MODEL (the real bottleneck): Qwen-2.5-0.5B vocab ~= 151,936, so the
+# OOM driver is the logits tensor ~ B * S * 151936, plus an fp32 upcast for
+# the loss + its grad  =>  ~ B*S*152k*~6 bytes. NOT the 0.5B body. So size
+# by B*S, not by param count. Rule of thumb on 80GB (bf16): keep
+#   B * S  <~ 90,000   ( ~35GB logits, big headroom; OOM was B*S=131,072 ).
+# Tune via nvidia-smi: each +16 train batch @ S=512 ~= +2.5GB. Push
+# PD_TRAIN up (×2) until ~70GB used; that is "using the GPU", not OOMing it.
+export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
+MAXLEN="${MAXLEN:-512}"          # seq len: halves logits vs 1024, plenty here
+PD_TRAIN="${PD_TRAIN:-64}"       # B*S = 64*512 = 32768  (~0.25x the OOM cfg)
+PD_EVAL="${PD_EVAL:-64}"         # same logits cost as train; not "free"
+GA="${GA:-1}"
+NPROC="${NPROC:-4}"              # box has 4 vCPU — match it (16 oversubscribed)
+DLW="${DLW:-4}"
+BG_BS="${BG_BS:-64}"             # background-DF batch (was 1 -> the 25min wall)
 PERF="--per-device-train-batch-size $PD_TRAIN \
 --per-device-eval-batch-size $PD_EVAL --gradient-accumulation-steps $GA \
---dataloader-num-workers $DLW --num-proc $NPROC \
+--dataloader-num-workers $DLW --num-proc $NPROC --max-length $MAXLEN \
 --background-batch-size $BG_BS --dtype bf16"
 
 if [ "$MODE" = "smoke" ]; then
@@ -69,8 +75,8 @@ for SEED in $SEEDS; do
 done
 
 echo "DONE ($MODE). Analyse: python $HERE/analyze.py $OUT"
-echo "GPU tip: in another shell run  watch -n1 nvidia-smi  — if VRAM<60GB"
-echo " and util<85% during sparse training, re-run with: PD_TRAIN=256 \\"
-echo " PD_EVAL=512 bash run_0010.sh $MODE  (push until ~70-75GB used)."
+echo "GPU tip: watch -n1 nvidia-smi during *sparse training*. Safe to push"
+echo " (S=512): PD_TRAIN=96 then 128 then 160 -> B*S 49k/65k/82k (<90k cap)."
+echo " e.g.  PD_TRAIN=128 PD_EVAL=128 bash run_0010.sh $MODE  ; aim ~70GB."
 echo "(smoke = wiring validation only, NOT a result; run 'full' for the"
 echo " pre-registered verdict, then analyze.py applies the paired rule.)"
