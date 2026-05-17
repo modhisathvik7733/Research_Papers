@@ -174,6 +174,7 @@ def sweep(name, n, grid, d, K, nonlin):
     row = next(r for r in rows if r[0] == star)
     print(f"H* = {star}: global fails {row[1]}/{n}, localpc fails {row[2]}/{n}")
     # parity where both run (largest such H)
+    worse = False
     pr = [r for r in rows if len(r[5]) >= 2 and len(r[6]) >= 2]
     if pr:
         H, _, _, _, _, gq, lq = pr[-1]
@@ -184,10 +185,21 @@ def sweep(name, n, grid, d, K, nonlin):
         print(f"parity @H={H}: localpc−global Δq m={-m:+.4f} "
               f"sign(localpc≤global)={sg}/{len(d_)} p={_sp(sg,len(d_)):.3f} "
               f"-> {'LOCALPC WORSE (claim fails)' if worse else 'parity OK'}")
-    print("VERDICT:", "FRONTIER DEMONSTRATED — global operationally fails at "
-          f"H*={star}; localpc survives at parity." if row[2] <
-          math.ceil(0.2 * n) else "localpc also fails at H* -> no operational "
-          "payoff (decisive bound).")
+    # VERDICT must honor BOTH gates: global fails, localpc survives, AND
+    # parity-where-both-run (the auto-line previously ignored parity — fixed).
+    surv = row[2] < math.ceil(0.2 * n)
+    par_ok = not (pr and worse)
+    if surv and par_ok:
+        print("VERDICT: FRONTIER DEMONSTRATED — global operationally fails "
+              f"at H*={star}; localpc survives at parity (BOTH gates).")
+    elif surv and not par_ok:
+        print("VERDICT: PARTIAL — global fails & localpc survives at "
+              f"H*={star}, BUT the pre-registered parity gate FAILS "
+              "(localpc consistently worse where both run; check effect size "
+              "vs significance). Not a clean frontier per pre-registration.")
+    else:
+        print("VERDICT: NO operational payoff — localpc also fails at H* "
+              "(decisive bound).")
 
 
 if __name__ == "__main__":

@@ -4,7 +4,13 @@
 - **Source:** Extension of exp-0002 (the O(1)-vs-O(H) structural law +
   the explicitly-deferred "OOM/crash is an extrapolation, not a result")
   after the CL-quality angle was closed (exp-0002/0004 negatives).
-- **Status:** PROPOSED — pre-registered, not yet run. Skeleton:
+- **Status:** RUN (2026-05-17). **Divergence channel: FRONTIER DEMONSTRATED**
+  (H*≈512, global fails 10/10, local-PC 0/10, quality parity p=1.000) —
+  operational necessity at parity quality, the one honest home. Qualifiers:
+  failure-mode not disaggregated (operational, not yet confirmed-mathematical);
+  memory channel does NOT bite at d=256 (no OOM, wall-time only, parity gate
+  fails on a negligible 0.0002 — exp-0002's gap restated as pre-flagged).
+  Capability claim only. Results + follow-ups in
   [experiments/0005-localpc-horizon-frontier/](../experiments/0005-localpc-horizon-frontier/).
 - **Intended use:** give Local-PC the one identity the evidence supports —
   *the credit rule that makes deep/long nested optimization feasible at all* —
