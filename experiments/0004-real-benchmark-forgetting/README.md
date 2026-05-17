@@ -130,6 +130,40 @@ directions.
 "how much does it forget" headline) → Permuted-MNIST → real text →
 n=60 confirmation (already 10/10 p=0.002, so robust; class-IL is the priority).
 
+## Stage 1c — THE BIG QUESTION: does Local-PC help ON TOP OF replay? (pre-registered)
+
+Replay (rehearsal) and Local-PC (slow-timescale weight retention via
+multi-timescale momentum) are *mechanistically orthogonal* on paper. The
+decisive question for "improve the system": do they **stack** (Local-PC adds
+anti-forgetting on top of the strongest baseline) or are they **redundant**
+(Local-PC just approximates rehearsal, no gain on top)?
+
+**Design — a clean 2×2:** {Adam, Local-PC} × {no-replay, replay}, i.e. arms
+`naive`, `localpc`, `replay`, `replay+localpc` (=`rpc`). Same data/seed/init
+per seed (paired CRN). Local-PC arms keep the pre-registered LR fairness grid.
+
+**The decisive paired test:** Forgetting( `replay` ) − Forgetting( `rpc` ),
+verbatim exp-0002 three-way rule. SEP-positive ⇒ **Local-PC helps on top of
+replay** (the genuine stacking win). NOT ⇒ **redundant with replay**. Also
+report the interaction contrast (localpc−naive) vs (rpc−replay) and an ACC
+no-regression check.
+
+> **Pre-registered predictions (fixed before running, accept either way).**
+> (B-1, task-IL) **NOT-separated** — task-IL replay Forget ≈0.005 is at the
+> floor; *a null here is a floor artifact and is pre-declared non-decisive,
+> not evidence of redundancy.* (B-2, class-IL — the decisive arena, replay
+> has large headroom) honest prior given exp-0002's partial-redundancy
+> finding: a **small additive benefit, AMBIGUOUS-to-SEP, direction = rpc ≤
+> replay** (helps, modestly). A clean SEP is a real stacking result; a clean
+> NOT at class-IL (with headroom) is the real "redundant with replay" verdict
+> — reported straight. (B-3) no ACC regression from adding Local-PC to replay.
+> n=60 confirmation pre-committed if class-IL B-2 lands AMBIGUOUS.
+
+Class-incremental (`--classil`): single shared 10-way head, no task ID at
+test (the genuinely catastrophic protocol; also resolves the stage-1
+H-real-1 miss). Run order: task-IL 2×2 (cheap, floor-limited) then class-IL
+2×2 (decisive).
+
 ## Honest caveats baked in
 
 Task-incremental multi-head is the *easier* protocol (test-time task ID
