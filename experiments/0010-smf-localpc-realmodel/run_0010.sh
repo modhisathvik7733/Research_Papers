@@ -15,7 +15,11 @@ mkdir -p "$OUT"
 
 if [ "$MODE" = "smoke" ]; then
   SEEDS="0"; RETRO_N="--sample-size 1500 --eval-sample-size 200"
-  SPARSE_N="--sample-size 400 --eval-sample-size 150 --num-train-epochs 1"
+  # NOTE: smoke MUST also shrink the TF-IDF background-DF pass, else it
+  # dominates (~25 min/arm over 10k samples). Wiring is validated the same
+  # with a tiny background pass.
+  SPARSE_N="--sample-size 400 --eval-sample-size 150 --num-train-epochs 1 \
+--background-sample-size 400 --background-max-batches 40"
   EVAL_N="--limit 40"
 elif [ "$MODE" = "full" ]; then
   SEEDS="0 1 2"                       # >=3 pre-registered; raise if budget allows
