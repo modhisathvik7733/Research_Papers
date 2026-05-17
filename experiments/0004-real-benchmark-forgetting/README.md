@@ -164,6 +164,56 @@ test (the genuinely catastrophic protocol; also resolves the stage-1
 H-real-1 miss). Run order: task-IL 2×2 (cheap, floor-limited) then class-IL
 2×2 (decisive).
 
+## Results — stage 1c (2×2 stacking, 10 seeds, RESOLVED 2026-05-17)
+
+```
+TASK-IL (pre-declared NON-decisive: replay at the floor)
+ naive   Forget 0.0791  ACC 0.932
+ localpc Forget 0.0143  ACC 0.956
+ replay  Forget 0.0047  ACC 0.992
+ rpc     Forget 0.0018  ACC 0.969
+ replay−rpc Forget: m+0.0029 9/10 p=0.021 SEP   (rpc lower forget) BUT
+ rpc−replay ACC:    m-0.0232 0/10        NOT    (rpc -2.3pts EVERY seed)
+ -> not a clean win: forgetting↓ bought with an accuracy regression; and
+    floor-limited / pre-declared non-decisive anyway.
+
+CLASS-IL (DECISIVE: replay has large headroom)
+ naive   Forget 0.9921  ACC 0.195   <- the real catastrophic number
+ localpc Forget 0.6033  ACC 0.221   (≈chance ACC: barely learns)
+ replay  Forget 0.1100  ACC 0.895   (rehearsal works)
+ rpc     Forget 0.2184  ACC 0.758
+ replay−rpc Forget: m-0.108 0/10 p=1.000 NOT  (rpc forgets MORE, every seed)
+ rpc−replay ACC:    m-0.136 0/10        NOT  (rpc -13.6pts, every seed)
+```
+
+**Decisive answer to THE big question: NO — Local-PC does not help on top of
+replay; in the class-incremental regime it makes it strictly WORSE on both
+forgetting (0.110→0.218) and accuracy (0.895→0.758), on all 10 seeds.** Not
+merely redundant — **anti-stacking**: the multi-timescale-momentum rigidity
+that lowers forgetting in isolation *fights the relearning replay requires*.
+Replay and Local-PC are mechanistically in conflict, not orthogonal.
+
+**Scorecard vs pre-registration, straight:**
+- **B-1 (task-IL): floor artifact as pre-declared.** Forget SEP but with a
+  per-seed ACC regression → no clean win; non-decisive by pre-registration.
+- **B-2 (class-IL): WRONG, decisively, opposite direction.** Predicted small
+  benefit (rpc≤replay); reality rpc clearly worse on both axes, 0/10.
+  Reported as a falsified prediction.
+- **B-3 (no ACC regression): FAILS both protocols** (−2.3 / −13.6 pts, 0/10).
+  Adding Local-PC to replay always costs accuracy.
+
+**Bonus — resolves the stage-1 H-real-1 miss.** Class-incremental naive
+Forgetting = **0.992**, ACC = **0.195** (≈chance): the genuinely catastrophic
+regime. *That* is "how much does it forget in real scenarios" with no
+mitigation — essentially everything. Replay fixes it (0.110 / 0.895);
+Local-PC does not and does not help replay do it.
+
+**Net for the system:** the cheap optimizer-side idea (Local-PC) is a
+stability-for-plasticity trade that helps a *naive* learner modestly but is
+redundant-to-harmful once you have rehearsal. The honest engineering
+conclusion: spend the buffer (replay); the nested optimizer is not a
+substitute for it and degrades it. Clean, decisive negative.
+
 ## Honest caveats baked in
 
 Task-incremental multi-head is the *easier* protocol (test-time task ID
