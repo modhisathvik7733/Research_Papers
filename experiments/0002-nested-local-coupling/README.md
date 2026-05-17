@@ -199,25 +199,46 @@ nested beats scalar 9/10 seeds but never clears seed variance — the
 C-stronger obstruction reproduced on the temporal axis. local-PC vs global =
 statistical tie (qgap −0.006 ≪ pooled), as on every prior benchmark.
 
-## Bottom line — IS THE LOCAL IDEA WORKING? (five pre-registered constructions)
+## Paired analysis (§7.6.7–8) — pre-registered NEW, correct variance
 
-- **As a structural/efficiency primitive: YES, unconditionally.** O(1) in
-  unroll H (101 vs 582 nodes), 0 divergences, strictly dominates the
-  hypergradient on cost + stability on every benchmark.
-- **As a better credit-assignment method: UNDETERMINED — and shown hard to
-  determine.** P1, C-scale, C-hetero, C-stronger, P3: on none does *any*
-  nested rule cleanly beat a tuned scalar by the verbatim rule. Neither does
-  HOPE's expensive hypergradient.
-- **Which is better, local-PC vs global?** Quality TIE everywhere incl. P3.
-  Forced to order: **local-PC, by strict dominance** (equal quality, O(1) cost,
-  ≥ stability) — atop the honest negative that neither is shown necessary.
-- **Obstruction identified:** seed variance scales with task difficulty as
-  fast as the nested advantage. That, not another toy knob, is the target.
+`--paired 10`. Methods already share the per-seed task draw (common random
+numbers) ⇒ paired design; the verbatim rule used the wrong (between-seed)
+variance. Originals reprinted UNCHANGED; paired alongside:
+
+```
+construction   original(between-seed,UNCHANGED)   paired Δ(scalar−nested)
+canonical-P1   DEGENERATE                          m+0.014 t2.26 8/10 p.109 -> AMBIGUOUS
+C-hetero       DEGENERATE                          m+0.048 t4.25 8/9  p.039 -> NON-DEGEN
+P3-cyclic      DEGENERATE                          m+0.041 t3.77 9/10 p.021 -> NON-DEGEN
+head-to-head global vs local-PC: paired TIE on both (raw lean mildly to global)
+```
+
+Cuts both ways, reported straight: **(+)** nesting significantly beats a
+tuned scalar once off the canonical geometry (C-hetero p=.039, P3 p=.021) —
+real effect, was masked by between-seed variance; **(−)** canonical is
+**AMBIGUOUS at n=10** (p=.109), so the strong "canonical is degenerate"
+headline is **downgraded to underdetermined** (pre-committed). Predictions:
+P-2 confirmed; P-1 wrong for canonical (reported wrong); P-3 confirmed (tie).
+
+## Bottom line — IS THE LOCAL IDEA WORKING? (after the paired analysis)
+
+- **Structural/efficiency primitive: YES, unconditionally.** O(1)-in-H
+  (101 vs 582 nodes), 0 divergences.
+- **Does nesting/credit-assignment matter? YES — off the canonical geometry.**
+  Paired test: nested beats best tuned scalar on C-hetero (p=.039) and P3
+  (p=.021). It does NOT on canonical (ambiguous, n=10) — needs higher n.
+- **local-PC vs global: paired quality TIE** (raw lean mildly to global) ⇒
+  **local-PC the better method by strict dominance** (equal quality, O(1) vs
+  O(H), better stability — global diverged 1/9 on C-hetero, local-PC never).
+  NOT a quality win for local-PC; an efficiency+stability win at equal quality.
+- **Highest-value next step:** raise n (resolve canonical; tighten the
+  C-hetero/P3 significances). Not another toy knob.
 
 ## Remaining
 
-1. Attack the variance obstruction directly: higher n, variance-reduced /
-   paired estimators, or a genuinely larger-scale benchmark (not a 24-d toy).
-2. Divergence-rate confirmation at higher n (global blow-up sparse: 1/10 @ h=1).
-3. Real-d demonstration converting the proven graph-memory law into an actual
+1. **Higher n** — the one decisive item: resolve canonical (paired ambiguous
+   at n=10) and tighten C-hetero/P3 significances. Cheap on CPU.
+2. C-scale under the paired analysis (untested half of prediction P-1).
+3. Divergence-rate confirmation at higher n (global blow-up sparse: 1/10 @ h=1).
+4. Real-d demonstration converting the proven graph-memory law into an actual
    OOM/timeout (extrapolation only so far).

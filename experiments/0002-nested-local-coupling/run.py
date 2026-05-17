@@ -1041,6 +1041,170 @@ def p3(n):
     print(f"total wall time: {time.perf_counter() - t0:.1f}s")
 
 
+# ---------------------------------------------------------------- paired ----
+# §7.6.7 — pre-registered NEW analysis (separately coded, not a re-slice).
+# p1/p3 already reseed identically per seed -> common random numbers ->
+# paired design. The verbatim rule used the BETWEEN-seed std (conservative /
+# mis-specified for a paired design); the correct variance is the std of the
+# per-seed DIFFERENCES. Original between-seed verdicts are RE-PRINTED here
+# unchanged, with the paired verdict alongside. Honesty guardrail enforced
+# in the printout.
+def _sign_p(k, m):
+    """Exact two-sided sign-test p for k successes out of m fair trials."""
+    if m == 0:
+        return 1.0
+    tail = sum(math.comb(m, i) for i in range(k, m + 1)) / (2.0 ** m)
+    return min(1.0, 2.0 * tail)
+
+
+def _three_way(m, s, sign, ns, lo=0.5, hi=1.0, fhi=0.8, flo=0.6):
+    """Mirror of the verbatim rule, paired variance. Returns
+    'SEP'|'NOT'|'AMB'. SEP iff m>hi*s and sign>=ceil(fhi*ns); NOT iff
+    m<=lo*s or sign<ceil(flo*ns); AMB otherwise."""
+    import math as _m
+    if ns == 0:
+        return "NOT"
+    need_hi, need_lo = _m.ceil(fhi * ns), _m.ceil(flo * ns)
+    if m > hi * s and sign >= need_hi:
+        return "SEP"
+    if m <= lo * s or sign < need_lo:
+        return "NOT"
+    return "AMB"
+
+
+def paired_core(n):
+    """One per-seed loop, common random numbers (as the existing code already
+    does). Returns stable per-seed arrays + graph nodes + divergence counts."""
+    K = KS[-1]
+    betas = [0.0, 0.5, 0.7, 0.8, 0.9, 0.95, 0.99]
+    DIV = lambda v: (not np.isfinite(v)) or v > 1e3
+    sc_, ll_, lg_ = [], [], []
+    nl = ng = 0
+    for s in range(n):
+        reseed(s)
+        best_sc = min(run_stream(None, 1, flat_beta=b)[0] for b in betas)
+        reseed(s)
+        phi_l, _, nl = meta_train_localpc(K, ablate=None)
+        Ll, _ = run_stream(phi_l, K)
+        reseed(s)
+        phi_g, _, ng = meta_train_global(K)
+        Lg, _ = run_stream(phi_g, K)
+        sc_.append(best_sc); ll_.append(Ll); lg_.append(Lg)
+        print(f"  seed {s}: scalar={best_sc:.4f} localPC={Ll:.4f} "
+              f"global={Lg:.4f}")
+    A = np.array
+    d_sc = int(sum(DIV(v) for v in sc_)); d_ll = int(sum(DIV(v) for v in ll_))
+    d_lg = int(sum(DIV(v) for v in lg_))
+    st = A([not (DIV(sc_[i]) or DIV(ll_[i]) or DIV(lg_[i]))
+            for i in range(n)])
+    return (A(sc_)[st], A(ll_)[st], A(lg_)[st], nl, ng, d_sc, d_ll, d_lg,
+            int(st.sum()))
+
+
+def paired_report(label, sc, ll, lg, nl, ng, d_sc, d_ll, d_lg, ns):
+    nb = np.minimum(ll, lg)
+    print(f"\n----- {label}  (stable {ns}; div sc={d_sc} lpc={d_ll} "
+          f"gl={d_lg}) -----")
+    print(f"  scalar {sc.mean():.4f}±{sc.std():.4f} | local-PC "
+          f"{ll.mean():.4f}±{ll.std():.4f} (g{nl}) | global "
+          f"{lg.mean():.4f}±{lg.std():.4f} (g{ng})")
+    # ORIGINAL between-seed verdict — recomputed, REPRINTED UNCHANGED
+    pooled = float(np.std(np.concatenate([ll, lg]))) if ns else float("nan")
+    margin = float(sc.mean() - nb.mean())
+    o_ties = ns > 0 and sc.mean() <= 1.25 * nb.mean() and margin <= pooled
+    o_nest = ns > 0 and sc.mean() > nb.mean() + 0.5 * pooled
+    o_v = "DEGENERATE" if o_ties else ("NESTING" if o_nest else "AMBIGUOUS")
+    print(f"  ORIGINAL (between-seed, AS PREVIOUSLY REPORTED — UNCHANGED): "
+          f"margin {margin:+.4f} vs pooled {pooled:.4f} -> {o_v}")
+    # PAIRED (new pre-registered analysis, correct variance)
+    d = sc - nb                                  # >0 => nested beats scalar
+    m, s = float(d.mean()), float(d.std(ddof=1)) if ns > 1 else float("nan")
+    sgn = int((d > 0).sum())
+    t = m / (s / math.sqrt(ns)) if (ns > 1 and s > 0) else float("nan")
+    nd = _three_way(m, s, sgn, ns)
+    nd_txt = {"SEP": "NON-DEGENERATE (scalar clearly beaten)",
+              "NOT": "DEGENERATE (scalar not beaten)",
+              "AMB": "AMBIGUOUS"}[nd]
+    print(f"  PAIRED non-degeneracy: Δ(scalar−nested) m={m:+.4f} "
+          f"s_pair={s:.4f} t={t:+.2f} sign={sgn}/{ns} "
+          f"(p={_sign_p(sgn, ns):.3f}) -> {nd_txt}")
+    if nd != "SEP":
+        print("  PAIRED head-to-head: GATED OFF (pre-registered: only if "
+              "non-degenerate).")
+        return label, o_v, nd, None
+    dd = lg - ll                                 # >0 => local-PC better
+    m2 = float(dd.mean())
+    s2 = float(dd.std(ddof=1)) if ns > 1 else float("nan")
+    sg2 = int((dd > 0).sum())
+    hh = _three_way(abs(m2), s2, max(sg2, ns - sg2), ns)
+    if hh == "SEP" and m2 > 0:
+        v = "LOCAL-PC BETTER (quality, paired)"
+    elif hh == "SEP" and m2 < 0:
+        v = "GLOBAL BETTER (quality, paired)"
+    else:
+        dom = (nl < ng) and (d_ll <= d_lg)
+        v = ("LOCAL-PC BETTER by dominance (paired quality tie; cheaper "
+             f"g{nl}<g{ng} & {'≥' if d_ll <= d_lg else '<'}-stable)" if dom
+             else "QUALITY TIE, no dominance")
+    print(f"  PAIRED head-to-head: Δ(global−localPC) m={m2:+.4f} "
+          f"s_pair={s2:.4f} sign(localPC win)={sg2}/{ns} -> {v}")
+    return label, o_v, nd, v
+
+
+def paired(n):
+    """Run the pre-registered paired analysis on the three decisive configs:
+    canonical P1, C-hetero, P3. Prints original (unchanged) + paired verdicts
+    side by side. Honesty guardrail printed explicitly."""
+    global D_IN, D_FEAT, N_TASKS, STREAM_STEPS, EVAL_BLOCK, HETERO, HET_STRENGTH
+    snap = (D_IN, D_FEAT, N_TASKS, STREAM_STEPS, EVAL_BLOCK, HETERO,
+            HET_STRENGTH)
+    print("PAIRED ANALYSIS (§7.6.7) — pre-registered NEW analysis. The "
+          "ORIGINAL between-seed verdicts are reprinted UNCHANGED; the paired "
+          "verdict (correct variance for this common-random-number design) is "
+          "shown alongside. We do NOT delete or overwrite the originals.")
+    print("PRE-REGISTERED: P1-canon & C-scale stay NOT-separated even paired; "
+          "C-hetero & P3 become SEPARATED paired; head-to-head stays a paired "
+          "tie (local-PC better only by dominance). Reported either way.\n")
+    rows = []
+    t0 = time.perf_counter()
+
+    print("== canonical P1 (orthonormal/shared-Σ, toy) ==")
+    D_IN, D_FEAT, N_TASKS, STREAM_STEPS, EVAL_BLOCK, HETERO, HET_STRENGTH = \
+        16, 24, 10, 120, None, False, 1.0
+    reseed(0)
+    rows.append(paired_report("canonical-P1", *paired_core(n)))
+
+    print("\n== C-hetero (per-task Σ_t + non-orthogonal r_t, toy) ==")
+    D_IN, D_FEAT, N_TASKS, STREAM_STEPS, EVAL_BLOCK, HETERO, HET_STRENGTH = \
+        16, 24, 10, 120, None, True, 1.0
+    reseed(0)
+    rows.append(paired_report("C-hetero", *paired_core(n)))
+
+    print("\n== P3 (cyclic reactivation, out-of-family) ==")
+    D_IN, D_FEAT, N_TASKS, STREAM_STEPS, EVAL_BLOCK, HETERO, HET_STRENGTH = \
+        16, 24, 3, 600, 30, False, 1.0
+    reseed(0)
+    rows.append(paired_report("P3-cyclic", *paired_core(n)))
+
+    (D_IN, D_FEAT, N_TASKS, STREAM_STEPS, EVAL_BLOCK, HETERO,
+     HET_STRENGTH) = snap
+    print("\n" + "=" * 74)
+    print("PAIRED SUMMARY (original UNCHANGED | paired)")
+    for lab, ov, nd, hh in rows:
+        print(f"  {lab:>14}: original={ov:<10}  paired={nd:<3}"
+              f"{('  head2head=' + hh) if hh else ''}")
+    print("-" * 74)
+    canon_nd = rows[0][2]
+    if canon_nd != "NOT":
+        print("NOTE: canonical-P1 flipped to non-NOT under pairing — this "
+              "WEAKENS the headline (the canonical benchmark would not be "
+              "cleanly degenerate). Reported as pre-committed.")
+    else:
+        print("Canonical-P1 stays NOT-separated even paired -> the canonical "
+              "degeneracy is genuine, not a between-seed variance artifact.")
+    print(f"total wall time: {time.perf_counter() - t0:.1f}s")
+
+
 def p1_scale(n):
     """C-scale (§7.6.1). SAME §4.3/Eq.45 construction, ~10x/5x/5x/5x larger.
     Pre-registered prediction: STAYS DEGENERATE (H-deg says degeneracy is
@@ -1223,6 +1387,8 @@ if __name__ == "__main__":
         p2_strength(int(sys.argv[2]) if len(sys.argv) > 2 else 10)
     elif len(sys.argv) > 1 and sys.argv[1] == "--p3":
         p3(int(sys.argv[2]) if len(sys.argv) > 2 else 10)
+    elif len(sys.argv) > 1 and sys.argv[1] == "--paired":
+        paired(int(sys.argv[2]) if len(sys.argv) > 2 else 10)
     elif len(sys.argv) > 1 and sys.argv[1] == "--lambda":
         lambda_sweep(int(sys.argv[2]) if len(sys.argv) > 2 else 8)
     elif len(sys.argv) > 1 and sys.argv[1] == "--lambda-fair":

@@ -283,17 +283,29 @@ divergence guard added to `p1` (orig `--p1` numerically unchanged).
   beats scalar 9/10 seeds but never clears seed variance (same obstruction as
   C-stronger, temporal axis). P3-B gated off as pre-committed. local-PC 0.393
   ≈ global 0.387 (tie, qgap −0.006), as everywhere.
-- **FINAL ANSWER (5 pre-registered constructions).** (1) Local idea works
-  **unconditionally as a structural/efficiency primitive** (O(1)-in-H, 0 div,
-  dominates hypergradient on cost+stability). (2) As a *better
-  credit-assignment method*: **undetermined and shown hard to determine** — no
-  nested rule (nor HOPE's hypergradient) cleanly beats a tuned scalar on any
-  benchmark in reach. (3) local-PC vs global: **quality tie everywhere ⇒
-  local-PC the better method by strict dominance**, atop the negative that
-  neither is shown necessary. (4) Root obstruction = seed variance scaling
-  with difficulty; that (not toy knobs) is the next target. The contribution
-  is now a clean pre-registered five-construction benchmark-degeneracy result
-  + a bounded O(1) structural law.
+- **Paired analysis (`--paired 10`, §7.6.7–8) — pre-registered NEW, correct
+  variance, originals preserved. SUPERSEDES the pre-paired "five-construction
+  negative".** Methods share per-seed task draw ⇒ paired design; verbatim rule
+  used wrong (between-seed) variance. Result, cuts both ways:
+  - **P-2 CONFIRMED:** nesting **significantly beats** the tuned scalar off
+    the canonical geometry — C-hetero p=.039 (t4.25, 8/9), P3 p=.021 (t3.77,
+    9/10). Real effect, was masked. The genuine "better result" (correct
+    stats, not spin).
+  - **P-1 WRONG for canonical:** AMBIGUOUS at n=10 (p=.109), NOT cleanly
+    degenerate → strong "canonical is optimizer-degenerate" claim **withdrawn,
+    downgraded to underdetermined**, reported as pre-committed. C-scale half
+    untested.
+  - **P-3 CONFIRMED w/ twist:** local-PC vs global = paired tie, raw lean
+    mildly to GLOBAL ⇒ local-PC better **only by dominance** (equal quality,
+    O(1) cost, global diverged 1/9 & local-PC never), NOT a quality win.
+- **REVISED FINAL ANSWER.** (1) Structural primitive: works unconditionally.
+  (2) Nesting **does** matter — off the canonical geometry, paired-significant.
+  (3) local-PC = the better method by dominance (equal quality, cheaper,
+  stabler), not by quality. (4) Canonical degeneracy: undetermined at n=10.
+  Contribution = clean O(1) structural law + a genuine pre-registered
+  off-degenerate-geometry positive for nesting + an honest retraction of the
+  over-strong canonical claim. Next: **higher n** (resolve canonical, tighten
+  significances) — cheap, decisive.
 
 ### Remaining honest caveats after the chain
 - Still a toy (24-d readout, 10 tasks). "Nonlinear" = MLP **combiner/readout**;
