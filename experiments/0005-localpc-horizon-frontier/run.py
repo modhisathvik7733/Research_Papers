@@ -104,9 +104,9 @@ def run(method, seed, H, d, K, nonlin):
             acc = 0.0
             for _ in range(H):
                 fx, y = task()
+                th = theta.detach().requires_grad_(True)
                 g = torch.autograd.grad(
-                    ((fx @ theta.detach().requires_grad_(True) - y) ** 2
-                     ).mean(), theta, create_graph=False)[0].detach()
+                    ((fx @ th - y) ** 2).mean(), th)[0].detach()
                 with torch.no_grad():
                     m, upd = cascade(phi, m, g, K, nonlin)
                 a = torch.sigmoid(phi["a"])
