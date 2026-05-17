@@ -75,6 +75,42 @@ The actual GPU runs require an explicit budget go.
 3. (GPU $) `smf-localpc` R-2, paired vs `smf-adam`, n seeds.
 4. n-up confirmation only if R-2 is AMBIGUOUS.
 
+## Turnkey: pull & run on the A100 (80GB)
+
+Pinned SMF commit `3237f35db38f0e04b221ea6b7fd126f36b9727b6`. From a fresh
+clone of THIS repo on the A100 box:
+
+```bash
+cd experiments/0010-smf-localpc-realmodel
+bash setup.sh                 # clone+pin SMF, pip install, drop in Local-PC
+bash run_0010.sh smoke        # FIRST — tiny, validates wiring (~minutes). NOT a result.
+python analyze.py out_smoke --dump   # confirm eval-JSON metric keys; fix KEYS if needed
+bash run_0010.sh full         # the pre-registered run (real GPU hours)
+python analyze.py out_full    # verbatim paired three-way -> R-2 verdict
+```
+
+Single experimental variable: the sparse-phase optimiser
+(`adamw` = official baseline, untouched; `localpc` = monkeypatched
+`create_optimizer`, no fork). Stage-1 dense retrofit is shared across arms.
+0.5B on 80GB is comfortable; `full` is ≥3 seeds (raise `SEEDS` in
+run_0010.sh if budget allows).
+
+**Discipline carried over:** `smoke` MUST be run and inspected first
+(wiring + eval-JSON schema) before the paid `full` run — exactly the
+smoke-before-real rule used in every prior experiment. `analyze.py` FAILS
+LOUDLY if it can't locate a metric key (refuses to mis-parse); `--dump`
+shows the real schema so you fix `KEYS` once. The R-2 verdict is the
+verbatim exp-0002 paired-CRN three-way + effect-size gate — no unqualified
+repo-default number.
+
+**Honest prior, restated at the run boundary:** across 9 prior experiments,
+on a non-nested model Local-PC is just multi-timescale momentum; the most
+probable result is **smf-localpc ≈ smf-adam (inert: no conflict, no gain)**.
+That would still be the first time the NL-side optimiser did not *harm* a
+real retention system — a modest, bounded positive. A clean *worse* = the
+synthesis fails on a real model (hardened negative). No quality-win is
+pre-claimed; deep-unroll value (exp-0005) is not tested here.
+
 ## Honest caveats baked in
 
 Official code but a "rebuild" (anonymous-submission repo) — R-1 sanity is
