@@ -89,6 +89,47 @@ n=60 confirmation pre-committed if a headline comparison is AMBIGUOUS.
 4. Real text streams (math→science domain-incremental) — stage 3.
 5. `--seeds 60` confirmation on any AMBIGUOUS headline comparison.
 
+## Results — stage 1 (Split-MNIST task-IL, 10 seeds, RESOLVED 2026-05-17)
+
+```
+arm       Forgetting↓        AvgAcc↑          paired vs naive (Forget)
+naive     0.0791 ± 0.0317    0.9319 ± 0.0255  —
+localpc*  0.0143 ± 0.0074    0.9562 ± 0.0062  m+0.065 10/10 p=0.002 SEP
+replay    0.0047 ± 0.0012    0.9918 ± 0.0011  m+0.074 10/10 p=0.002 SEP
+ewc       0.0620 ± 0.0323    0.9458 ± 0.0260  m+0.017  7/10 p=0.344 AMB
+replay vs localpc (Forget): m-0.010 1/10 -> NOT (replay nominally best;
+                            localpc does NOT beat replay)
+localpc* = fair per-seed best-of-LR-grid (mostly lr=0.01).
+```
+
+**Headline:** on real Split-MNIST task-IL the nested local-PC system cuts
+forgetting **~5.5× vs naive** (7.9%→1.4%), **every seed (10/10, p=0.002)**,
+while *raising* accuracy (0.932→0.956); lands far closer to replay (0.5%)
+than to naive, and clearly beats EWC. First real-data, pre-registered,
+statistically clean positive in the project.
+
+**Scorecard vs pre-registration, straight:**
+- **H-real-1 NOT met.** Naive task-IL forgetting = 7.9 pts < the
+  pre-registered 15-pt "catastrophic" bar. Task-IL is the *easy* protocol;
+  the catastrophic regime is **class-incremental (stage 1b, NOT yet run)**.
+  Reported as a miss, not spun.
+- **H-real-2: the pre-registered "genuine positive" branch fired** (we had
+  pre-committed to expecting localpc≈naive and flagging a clear win as a real
+  surprise). localpc does NOT beat replay — that half holds. EWC barely helps
+  (AMB) — mild surprise, consistent with EWC's known weakness here.
+- **H-real-3:** the number is delivered with CIs (table above).
+
+**Honest bounds:** optimizer form (not a dedicated CL algorithm); MNIST scale;
+*task-IL* easy protocol (class-IL stage 1b is the real catastrophic test);
+fairness-dependent (un-tuned port collapses — the pre-registered LR grid is
+load-bearing and disclosed). Mechanism hypothesis (not claimed): slow
+timescales in the multi-timescale momentum resist overwriting prior-task
+directions.
+
+**Next (escalation):** stage 1b class-incremental Split-MNIST (the real
+"how much does it forget" headline) → Permuted-MNIST → real text →
+n=60 confirmation (already 10/10 p=0.002, so robust; class-IL is the priority).
+
 ## Honest caveats baked in
 
 Task-incremental multi-head is the *easier* protocol (test-time task ID
