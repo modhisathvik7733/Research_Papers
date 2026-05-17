@@ -20,8 +20,9 @@ python -m pip install -r requirements.txt
 
 # Local-PC lives at SMF repo root so `from local_pc import LocalPC` resolves
 # when cwd = repo root (how run_0010.sh invokes everything).
-cp "$HERE/local_pc.py"     "$SMF_DIR/local_pc.py"
-cp "$HERE/smf_localpc.py"  "$SMF_DIR/smf_localpc.py"
+cp "$HERE/local_pc.py"      "$SMF_DIR/local_pc.py"
+cp "$HERE/smf_localpc.py"   "$SMF_DIR/smf_localpc.py"
+cp "$HERE/sitecustomize.py" "$SMF_DIR/sitecustomize.py"  # A100 TF32/bf16 paths
 
 python -c "import torch,transformers,accelerate,datasets; \
 print('torch',torch.__version__,'cuda',torch.cuda.is_available(), \
