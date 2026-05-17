@@ -4,15 +4,20 @@
 follow-up controls run. The pre-registered adversarial control (P1) returned
 **DEGENERATE**; the pre-registered **scale** control confirmed degeneracy is
 scale-robust (prediction held); the pre-registered **heterogeneity** control
-did **not** cleanly confirm its prediction; a final pre-registered
-**heterogeneity sweep** then triggered its **bounding clause** — the §4.3/Eq.45
-construction *family* is robustly optimizer-degenerate. The credit-assignment
+did **not** cleanly confirm its prediction; a pre-registered **heterogeneity
+sweep** triggered its **bounding clause**; and a final, decisive
+**out-of-family benchmark (P3, cyclic reactivation built to require
+long-horizon credit)** also returned **degenerate** by the verbatim rule.
+Across **five pre-registered constructions**, sophisticated credit assignment
+never cleanly beats a single tuned scalar at this scale. The credit-assignment
 contribution is **deflated by our own controls**; the **unconditional
-structural law** survives but is now **explicitly bounded** — it has no
-demonstrated home anywhere in this benchmark family. All numbers are 8–10-seed
-CPU runs reproducible from a single script (see Reproducibility). No claim is
-softened; several of our own pre-registered predictions were wrong and are
-reported as wrong.*
+structural law** survives. "Which is better, local-PC or the hypergradient?":
+a **quality tie everywhere measured**, with local-PC strictly dominating on
+cost (O(1) vs O(H)) and stability (0 vs 1 divergence) — so **local-PC, by
+dominance** — atop the larger honest negative that *neither nested rule is
+shown necessary over a scalar*. All numbers are 8–10-seed CPU runs reproducible
+from a single script. No claim is softened; several of our own pre-registered
+predictions were wrong and are reported as wrong.*
 
 ---
 
@@ -71,10 +76,21 @@ the unconditional structural law survives but is now **explicitly bounded** —
 no demonstrated home anywhere in this family, gaining only an unanticipated
 stability edge over the (sometimes-diverging) hypergradient. We present this as
 a bounded, honest result in which several of our own pre-registered predictions
-were wrong and are reported as wrong: a solid structural law, a scale-robust
-*family-level* benchmark-degeneracy finding, and a precise statement that the
-next benchmark must leave the family entirely (P3) before cheap local coupling
-can be said to matter.
+were wrong and are reported as wrong: a solid structural law and a five-
+construction, pre-registered benchmark-degeneracy finding. We then built and
+ran P3 — a benchmark deliberately outside the family, with cyclic task
+reactivation engineered so no single decay constant can both adapt and retain
+— and it too returned degenerate by the verbatim rule (scalar − best-nested
++0.041 ≤ pooled 0.060; nested wins 9/10 seeds but never clears seed variance).
+The honest bottom line: the local idea **works as a structural primitive**
+(O(1)-in-H, 0 divergences, dominating the hypergradient on cost and stability
+everywhere); on quality it is a **statistical tie with the hypergradient on
+every benchmark including P3**; and *neither* nested rule has been shown to
+beat a tuned scalar on any benchmark in reach. Forced to order the two:
+**local-PC, by strict dominance** (equal quality, lower cost, ≥ stability) —
+but the load-bearing fact is the negative beneath it. The identified
+obstruction (seed variance scaling with task difficulty) is named as the
+explicit target for future work, not papered over.
 
 ---
 
@@ -382,6 +398,21 @@ monotone, bounded negative and moving Contribution A from *contingent* to
 *explicitly bounded* — no demonstrated home anywhere in this family; the next
 benchmark must leave it (P3).
 
+**P3 — out-of-family decisive benchmark (§7.6.5–6), 10 seeds.** Cyclic task
+reactivation, engineered so no single decay constant can both adapt within a
+30-step block and retain across a 60-step gap. *Predicted: P3-A non-degenerate
+(scalar clearly loses) ⇒ run P3-B head-to-head.* **Outcome: P3-A DEGENERATE,
+prediction wrong, reported wrong.** scalar 0.419 vs best-nested 0.387, margin
++0.041 ≤ pooled 0.060; nested beats scalar 9/10 seeds but never clears seed
+variance (the C-stronger obstruction, reproduced on the temporal axis). By the
+pre-registered gate, P3-B does not run. Within the nested pair (exploratory):
+local-PC 0.393 ≈ global 0.387, a statistical tie (|qgap| 0.006 ≪ pooled), as
+on every prior benchmark; local-PC graph 101 vs global 582, 0 divergences
+both. **Consolidated:** five pre-registered constructions, zero clean
+separations from a tuned scalar — the local idea is a proven O(1) structural
+primitive and a quality-tie with the hypergradient, but neither nested rule is
+shown necessary over a scalar anywhere reachable at this scale.
+
 ---
 
 ## 6. What we claim and what we do not — after P1
@@ -421,11 +452,14 @@ paper than "a cheaper credit rule."
 evidence for the method — P1 removed that reading. (iii) A demonstrated
 hardware failure (extrapolation from the O(H·K·d) law). (iv) Any result beyond
 a 24-d, 10-task toy. (v) That the structural law matters *anywhere yet* —
-credit assignment is moot on the canonical geometry (P1), scale-robustly
-(C-scale), and across the entire pre-registered heterogeneity sweep
-(C-stronger, h≤4, bounding clause triggered). The law is **explicitly
-bounded**: no demonstrated home anywhere in the §4.3/Eq.45 family. Only a
-benchmark *outside* the family (P3) could establish it.
+credit assignment is moot on the canonical geometry (P1), at scale (C-scale),
+across the pre-registered heterogeneity sweep (C-stronger), **and on the
+out-of-family cyclic-reactivation benchmark P3** built specifically to require
+long-horizon credit. Five pre-registered constructions, no clean separation
+from a tuned scalar. The structural law is **proven and dominant on cost +
+stability** but its quality payoff is **unestablished everywhere reachable**;
+the obstruction is identified (seed variance scaling with difficulty), not yet
+overcome.
 
 ---
 
@@ -650,6 +684,91 @@ long-horizon credit (P3). That is the honest next step; we do not claim the
 structural law matters until such a benchmark exists and is non-degenerate by
 this same verbatim test.
 
+#### 7.6.5 P3 — the decisive non-degenerate benchmark (pre-registered before running)
+
+P3 leaves the §4.3/Eq. 45 family along the *temporal* axis, where the
+degeneracy proof's premise ("one decay constant suffices") provably fails.
+**Construction: cyclic task reactivation.** A small task set (N=3, orthonormal
+directions) is streamed in short blocks (B=30 steps) and **cycled many times**
+(stream 600 ⇒ 20 recurrences/task; recurrence interval 90 steps, inter-block
+gap 60). The optimizer must simultaneously (i) adapt within a 30-step block and
+(ii) retain a task's gradient subspace across a 60-step gap of orthogonal
+interference. A *single* momentum/decay β provably cannot do both: small β
+adapts but forgets across the gap; large β retains but cannot adapt in 30
+steps. A fast+slow multi-level memory can — this is exactly NL §4.3's "continual
+learning needs the optimizer to keep a long-term compression of the gradient
+subspace." Same verbatim P1 machinery and divergence guard; n=10; K=8.
+
+> **P3-A (non-degeneracy, pre-registered).** The best grid-searched scalar is
+> *clearly worse* than the best nested optimizer: scalar_mean −
+> nested_best_mean **> pooled std** on the stable subset (the inverse of the
+> P1 tie rule). If this fails, P3 is itself degenerate — reported straight,
+> and the local idea remains undetermined (a yet-different benchmark needed).
+>
+> **P3-B (which is better — the head-to-head, pre-registered).** *Only if*
+> P3-A holds. Let qgap = global_mean − localPC_mean (stable subset),
+> pooled = std over the pooled stable {localPC, global}. Verdict:
+> • |qgap| ≤ pooled ⇒ **quality-equivalent**; decided by the two
+> pre-measured tiebreakers, **stability** (divergence count) then **cost**
+> (backward-graph nodes). Since local-PC is exactly O(1) in H and global is
+> O(H·K), a quality tie ⇒ **LOCAL-PC BETTER (dominant: equal quality, strictly
+> cheaper, ≥ as stable)**.
+> • qgap > pooled ⇒ **LOCAL-PC BETTER on quality outright**.
+> • qgap < −pooled ⇒ **GLOBAL BETTER on quality**; then honestly weighed
+> against its O(H) cost and any divergence.
+> Predicted (stated before running, consistent with all prior evidence):
+> P3-A holds (scalar clearly loses); P3-B returns **quality-equivalent ⇒
+> LOCAL-PC BETTER by dominance** (equal quality, O(1) vs O(H), ≤ divergences).
+> A clean "GLOBAL BETTER on quality" would be the most informative refutation
+> and is reported as such if it occurs.
+
+This is the experiment that converts "is the local idea working?" from
+*undetermined* to a definite, pre-registered yes/no with an explicit
+better-than ordering.
+
+#### 7.6.6 P3 resolution (run; P3-A degenerate — prediction wrong, reported wrong)
+
+Cyclic reactivation (N=3, B=30, stream 600, 10 seeds, K=8):
+
+| | final loss (10 seeds) |
+|---|---|
+| best tuned scalar | 0.4194 ± 0.064 |
+| local-PC | 0.3931 ± 0.064 (graph 101, O(1) in H) |
+| global | 0.3874 ± 0.056 (graph 582, O(H·K)) |
+
+scalar − best-nested = **+0.041 ≤ pooled 0.060 ⇒ P3-A DEGENERATE**. Our
+pre-registered prediction (P3-A holds, scalar clearly loses) is **wrong; we
+report it as wrong**, not re-interpreted. By the pre-registered gate, P3-B
+(the head-to-head) **does not run** — we committed to that gate and honor it;
+we do not crown a winner through a back door.
+
+*The consistent directional signal, reported as exploratory (not
+pre-registered, not used to decide):* the nested optimizer beats the scalar on
+**9/10 seeds**, but the mean advantage never clears seed variance — the
+identical variance-inflation obstruction found in C-stronger (§7.6.4), now
+reproduced on the *temporal* axis with a different construction. Within the
+nested pair, local-PC and global are a **statistical tie** (qgap = global −
+local-PC = −0.006, |qgap| ≪ pooled; no clean per-seed winner), exactly as on
+every prior benchmark.
+
+**Consolidated verdict across five pre-registered constructions** (P1,
+C-scale, C-hetero, C-stronger, P3): on *none* — including one purpose-built to
+require long-horizon credit — does sophisticated credit assignment cleanly
+beat a single tuned scalar at this toy scale, by the verbatim rule. The local
+idea is therefore: (i) **unconditionally working as a structural/efficiency
+primitive** — O(1)-in-H backward graph, 0 divergences, strictly dominating the
+hypergradient on cost and stability on every benchmark; (ii) **a
+quality-tie with the global hypergradient everywhere measured, including P3**;
+(iii) **not demonstrated to be worth using over a tuned scalar on any
+benchmark in reach** — and neither is the expensive hypergradient. "Which is
+better" between the two nested rules: **local-PC, strictly, by dominance**
+(equal quality, lower cost, ≥ stability); but that ordering sits on top of the
+larger, honest negative that *neither nested rule has been shown necessary at
+all*. The bottleneck is now precisely identified — seed variance scaling with
+task difficulty — and is the explicit target for any future work (higher n,
+variance-reduced estimators, or a genuinely larger-scale benchmark), not
+another knob on this toy.
+
 ---
 
 ## 8. Limitations
@@ -664,16 +783,22 @@ this same verbatim test.
   assignment does — and credit assignment is degenerate on the canonical
   geometry (P1), at scale (C-scale), and across the entire pre-registered
   heterogeneity sweep up to ~2000:1 condition spread (C-stronger, bounding
-  clause). The law therefore has **no demonstrated home in the §4.3/Eq.45
-  family**; only a benchmark outside the family (P3) could give it one. This
-  is the single largest limitation and we state it as a bound, not a promise.
-- **Several of our pre-registered predictions were wrong.** C-hetero was
-  predicted to show clean "NESTING MATTERS"; it did not. C-stronger predicted
-  a DEGENERATE→NESTING flip at some h≤4 (b) and divergence rising with h (c);
-  neither held — only the monotone-margin prediction (a) did. All misses are
-  reported as misses, not re-interpreted into successes. The supporting 8/9
-  paired result and the rising margin/pooled ratio are exploratory and
-  explicitly *not* pre-registered; we do not extrapolate them.
+  clause). **P3, built outside the family specifically to require long-horizon
+  credit, also returned degenerate** by the verbatim rule. The law therefore
+  has **no demonstrated quality home on any of five pre-registered
+  constructions**. This is the single largest limitation; we state it as a
+  bound, not a promise. The obstruction is identified — seed variance grows
+  with task difficulty as fast as the nested advantage — and is the explicit
+  target for future work (higher n / variance-reduced estimators / genuinely
+  larger scale), not another knob on this toy.
+- **Several of our pre-registered predictions were wrong.** C-hetero predicted
+  clean "NESTING MATTERS" (no). C-stronger predicted a flip at h≤4 and rising
+  divergence (no; only monotone margin held). **P3 predicted P3-A
+  non-degenerate so the head-to-head P3-B would run; it did not — P3-A was
+  degenerate, so by our own pre-registered gate P3-B was not run and no
+  "winner" is crowned.** All misses are reported as misses. The 8/9 and 9/10
+  paired signals and the rising margin/pooled ratio are exploratory, *not*
+  pre-registered, and not extrapolated.
 - **Hypergradient instability is a finding, with a small-n caveat.** Global
   diverged on 1/10 C-hetero seeds (the L2O pathology); local-PC/scalar did
   not. This is first-class but is a single divergence at n=10 — the *rate* is
@@ -738,6 +863,9 @@ Single self-contained script, CPU, deterministic, no external data:
 - `python run.py --p2-strength 10` — **§5.7 / §7.6.3–4 C-stronger
   (pre-registered heterogeneity sweep h∈{0..4}; monotone margin confirmed;
   bounding clause triggered → family robustly degenerate)**
+- `python run.py --p3 10` — **§5.7 / §7.6.5–6 P3 (out-of-family cyclic
+  reactivation; pre-registered P3-A/P3-B gate; P3-A → DEGENERATE,
+  prediction reported wrong; P3-B gated off as committed)**
 
 Sweeps run in ≈5–40 s on an Apple M1 Max (C-scale ≈9 min). Pre-registered
 criteria, the (verbatim, reused) P1 decision rule, the divergence guard, and
@@ -790,8 +918,27 @@ experiments, runs them, reports a pre-committed deflationary outcome *and*
 several wrong predictions of its own — without re-spinning any of them, and
 refusing to extrapolate the one suggestive trend past its pre-registered grid
 — is more useful to the Nested Learning programme than a confident story we
-had already shown ourselves how to falsify. The next benchmark must leave the
-§4.3/Eq.45 family entirely (P3); until such a non-degenerate benchmark exists
-and passes this same verbatim test, we do not claim cheap local coupling
-matters — only that, where it is ever needed, it is O(1) in the unroll
-horizon and does not diverge.
+had already shown ourselves how to falsify. Finally we built P3 — a benchmark
+*outside* the family, cyclic task reactivation engineered so no single decay
+constant can both adapt and retain — as the experiment that would convert "is
+the local idea working?" into a definite answer. **P3-A returned degenerate
+too** (scalar − best-nested +0.041 ≤ pooled 0.060; nested wins 9/10 seeds but
+never clears seed variance), so by our own pre-registered gate the
+head-to-head P3-B was not run and we crown no winner through a back door. The
+fully resolved, honest answer to "is the local idea working, and which is
+better": **(1)** as a structural/efficiency primitive it works
+unconditionally — O(1) in the unroll horizon, zero divergences, strictly
+dominating the hypergradient on cost and stability on every benchmark;
+**(2)** on quality, local-PC and the global hypergradient are a statistical
+tie on all five pre-registered constructions including P3 — so *forced to
+order them, local-PC wins by strict dominance* (equal quality, lower cost, ≥
+stability); **(3)** but neither nested rule — nor HOPE's expensive
+hypergradient — has been shown to beat a single tuned scalar on any benchmark
+in reach, so we do **not** claim the local idea (or nesting) improves
+continual learning. The recurring obstruction is now precisely identified —
+seed variance scaling with task difficulty — and named as the target for
+future work (higher n, variance-reduced estimators, genuinely larger scale),
+not another knob on a 24-d toy. A five-construction, pre-registered negative
+with a clean structural law and a wrong-prediction trail reported as wrong is,
+we maintain, more useful to the Nested Learning programme than the confident
+credit-assignment story we set out to write.

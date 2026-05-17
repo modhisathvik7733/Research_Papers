@@ -92,6 +92,7 @@ node ratio g8/l8 = 5.8x, deterministic across all seeds
 | **C-scale** (pre-registered) | `--p1-scale 8` | predicted DEGENERATE → **CONFIRMED**: same geometry 10×/5×/5×/5× larger still degenerate (sc 0.751 / lpc 0.750 / gl 0.748, margin +0.004, 0/8 div). Degeneracy is geometry, not size. |
 | **C-hetero** (pre-registered) | `--p2 10` | predicted "NESTING MATTERS" → **NOT cleanly confirmed**: verbatim rule still DEGENERATE on 9 stable seeds (margin +0.048 ≤ pooled 0.065). BUT degeneracy breaking (monotone gl 0.704 < lpc 0.729 < sc 0.748; exploratory paired gl<sc 8/9) + **global diverged 1/10** (L2O blow-up, never on canonical geometry). |
 | **C-stronger** (pre-registered) | `--p2-strength 10` | predicted monotone margin (a) + flip at h\*≤4 (b) + div↑h (c) → **(a) confirmed, (b)(c) NOT**. Margin grows 0.027→0.169 monotone but pooled inflates in lockstep; rule DEGENERATE at every h∈{0..4}; **bounding clause triggered → §4.3/Eq.45 family ROBUSTLY degenerate**. |
+| **P3** out-of-family (pre-registered) | `--p3 10` | predicted P3-A non-degenerate → run head-to-head P3-B. **P3-A DEGENERATE, prediction WRONG (reported wrong)**: cyclic reactivation, scalar 0.419 vs best-nested 0.387, margin +0.041 ≤ pooled 0.060; nested wins 9/10 seeds but never clears seed variance. P3-B gated off (as committed). local-PC≈global (tie, qgap −0.006). |
 
 ## P1 resolution (the pre-registered control — RUN, DEGENERATE)
 
@@ -183,14 +184,40 @@ demonstrated home anywhere in this family; it retains only a stability edge
 over the sometimes-diverging hypergradient. Contribution B deflated,
 family-level. Next benchmark must **leave the family** (P3).
 
-## Remaining (now the critical path)
+## P3 — out-of-family decisive benchmark (RESOLVED 2026-05-17)
 
-1. **P3 — leave the §4.3/Eq.45 family entirely.** Genuinely different per-task
-   feature *functions* / nonstationary correlated streams / a structure where
-   optimal Φ provably needs long-horizon credit. Must be non-degenerate by
-   this same verbatim test before any "the structural law matters" claim.
-2. **Divergence-rate confirmation** — the global blow-up is first-class but
-   sparse (1/10 at h=1 only); confirm rate at higher n.
+```
+P3 cyclic reactivation (N=3, B=30, stream=600, 10 seeds, K=8)
+  best scalar : 0.4194 ± 0.064
+  local-PC    : 0.3931 ± 0.064   graph 101  (O(1) in H)
+  global      : 0.3874 ± 0.056   graph 582  (O(H·K))
+  scalar − best-nested = +0.041  (pooled 0.060)   div: 0/0/0
+P3-A: DEGENERATE (margin ≤ pooled) — prediction WRONG, reported wrong
+P3-B: GATED OFF (pre-registered: only runs if P3-A holds)
+```
+nested beats scalar 9/10 seeds but never clears seed variance — the
+C-stronger obstruction reproduced on the temporal axis. local-PC vs global =
+statistical tie (qgap −0.006 ≪ pooled), as on every prior benchmark.
+
+## Bottom line — IS THE LOCAL IDEA WORKING? (five pre-registered constructions)
+
+- **As a structural/efficiency primitive: YES, unconditionally.** O(1) in
+  unroll H (101 vs 582 nodes), 0 divergences, strictly dominates the
+  hypergradient on cost + stability on every benchmark.
+- **As a better credit-assignment method: UNDETERMINED — and shown hard to
+  determine.** P1, C-scale, C-hetero, C-stronger, P3: on none does *any*
+  nested rule cleanly beat a tuned scalar by the verbatim rule. Neither does
+  HOPE's expensive hypergradient.
+- **Which is better, local-PC vs global?** Quality TIE everywhere incl. P3.
+  Forced to order: **local-PC, by strict dominance** (equal quality, O(1) cost,
+  ≥ stability) — atop the honest negative that neither is shown necessary.
+- **Obstruction identified:** seed variance scales with task difficulty as
+  fast as the nested advantage. That, not another toy knob, is the target.
+
+## Remaining
+
+1. Attack the variance obstruction directly: higher n, variance-reduced /
+   paired estimators, or a genuinely larger-scale benchmark (not a 24-d toy).
+2. Divergence-rate confirmation at higher n (global blow-up sparse: 1/10 @ h=1).
 3. Real-d demonstration converting the proven graph-memory law into an actual
    OOM/timeout (extrapolation only so far).
-4. Deep-MLP *per level* (currently tanh-per-level + MLP combiner).

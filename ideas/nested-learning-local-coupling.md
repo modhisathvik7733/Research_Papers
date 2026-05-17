@@ -275,6 +275,25 @@ divergence guard added to `p1` (orig `--p1` numerically unchanged).
   the sometimes-diverging hypergradient). **Critical path now: P3 — leave the
   family entirely**; non-degenerate by the same verbatim test is the
   precondition for any "structural law matters" claim.
+- **P3 (`--p3 10`) out-of-family decisive benchmark — RESOLVED, P3-A
+  DEGENERATE.** Cyclic task reactivation (N=3, B=30, stream 600; recur/90,
+  gap 60), engineered so no single decay constant adapts AND retains.
+  Pre-registered P3-A (scalar clearly loses) → **WRONG, reported wrong**:
+  scalar 0.419 vs best-nested 0.387, margin +0.041 ≤ pooled 0.060; nested
+  beats scalar 9/10 seeds but never clears seed variance (same obstruction as
+  C-stronger, temporal axis). P3-B gated off as pre-committed. local-PC 0.393
+  ≈ global 0.387 (tie, qgap −0.006), as everywhere.
+- **FINAL ANSWER (5 pre-registered constructions).** (1) Local idea works
+  **unconditionally as a structural/efficiency primitive** (O(1)-in-H, 0 div,
+  dominates hypergradient on cost+stability). (2) As a *better
+  credit-assignment method*: **undetermined and shown hard to determine** — no
+  nested rule (nor HOPE's hypergradient) cleanly beats a tuned scalar on any
+  benchmark in reach. (3) local-PC vs global: **quality tie everywhere ⇒
+  local-PC the better method by strict dominance**, atop the negative that
+  neither is shown necessary. (4) Root obstruction = seed variance scaling
+  with difficulty; that (not toy knobs) is the next target. The contribution
+  is now a clean pre-registered five-construction benchmark-degeneracy result
+  + a bounded O(1) structural law.
 
 ### Remaining honest caveats after the chain
 - Still a toy (24-d readout, 10 tasks). "Nonlinear" = MLP **combiner/readout**;

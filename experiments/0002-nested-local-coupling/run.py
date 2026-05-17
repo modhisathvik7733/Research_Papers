@@ -50,6 +50,9 @@ HETERO = False      # set by --p2: break BOTH degeneracy sources of §4.3/Eq.45
                     #   (2) non-orthogonal correlated task directions r_t.
                     # Under H-deg this is the construction predicted to make
                     # credit assignment matter (single scalar should separate).
+EVAL_BLOCK = None   # P3: round-robin block size for the eval stream. None =
+                    # original single-pass block-sequential. Set small (<<
+                    # STREAM_STEPS) -> cyclic task reactivation (tasks recur).
 HET_STRENGTH = 1.0  # P2-stronger knob: per-task anisotropy = (0.3+1.7u)^h.
                     # h=0 homogeneous (degenerate anchor); h=1 reproduces the
                     # original C-hetero point exactly; h>1 raises per-task
@@ -327,7 +330,8 @@ def run_stream(phi, K, block=None, flat_beta=None):
     theta = torch.zeros(theta_dim())
     m = [torch.zeros(theta_dim()) for _ in range(K)] if phi else None
     buf = torch.zeros(theta_dim())                # flat-baseline momentum buffer
-    B = STREAM_STEPS if (block is None or block >= STREAM_STEPS) else block
+    eff = block if block is not None else EVAL_BLOCK   # P3 uses EVAL_BLOCK
+    B = STREAM_STEPS if (eff is None or eff >= STREAM_STEPS) else eff
     ncyc = STREAM_STEPS // B
     schedule = [t for _ in range(ncyc) for t in range(N_TASKS) for _ in range(B)]
     last_block_end = {}                            # step idx ending task t's run
@@ -930,6 +934,113 @@ def p2_strength(n):
               "family entirely (P3).")
 
 
+def p3(n):
+    """P3 (§7.6.5) — the decisive non-degenerate benchmark. Leaves the
+    §4.3/Eq.45 family on the TEMPORAL axis: cyclic task reactivation. Small
+    task set, short blocks, many recurrences -> the recurrence gap exceeds any
+    single momentum/decay's useful horizon, so a tuned scalar provably cannot
+    both adapt-in-block and retain-across-gap; a fast+slow nested memory can.
+
+    Two pre-registered verdicts:
+      P3-A non-degeneracy: best scalar CLEARLY worse than best nested
+        (scalar_mean - nested_best_mean > pooled std, stable subset) — the
+        inverse of the P1 tie rule. If it fails, P3 is itself degenerate.
+      P3-B which-is-better (only if P3-A holds): qgap = global - localPC.
+        |qgap|<=pooled -> quality tie -> decided by stability (divergences)
+        then cost (graph nodes) -> dominance verdict; qgap>pooled -> local-PC
+        better on quality; qgap<-pooled -> global better on quality."""
+    global N_TASKS, STREAM_STEPS, EVAL_BLOCK
+    N_TASKS, STREAM_STEPS, EVAL_BLOCK = 3, 600, 30   # 20 recurrences/task,
+    K = KS[-1]                                       # gap 60 >> short-β horizon
+    betas = [0.0, 0.5, 0.7, 0.8, 0.9, 0.95, 0.99]
+    DIV = lambda v: (not np.isfinite(v)) or v > 1e3
+    sc_, bb_, ll_, lg_ = [], [], [], []
+    nl = ng = 0
+    t0 = time.perf_counter()
+    print(f"P3 (cyclic reactivation): tasks={N_TASKS} block={EVAL_BLOCK} "
+          f"stream={STREAM_STEPS} (recur every {N_TASKS*EVAL_BLOCK} steps, "
+          f"gap {(N_TASKS-1)*EVAL_BLOCK}); K={K}, seeds={n}")
+    print("PRE-REGISTERED: P3-A scalar CLEARLY worse than best nested "
+          "(margin > pooled); P3-B then decides local-PC vs global.\n")
+    for s in range(n):
+        reseed(s)
+        best_sc, best_b = min(((run_stream(None, 1, flat_beta=b)[0], b)
+                               for b in betas), key=lambda x: x[0])
+        reseed(s)
+        phi_l, _, nlk = meta_train_localpc(K, ablate=None)
+        Ll, _ = run_stream(phi_l, K)
+        reseed(s)
+        phi_g, _, ngk = meta_train_global(K)
+        Lg, _ = run_stream(phi_g, K)
+        nl, ng = nlk, ngk
+        sc_.append(best_sc); bb_.append(best_b); ll_.append(Ll); lg_.append(Lg)
+        print(f"seed {s}: scalar={best_sc:.4f}(β={best_b}) "
+              f"localPC={Ll:.4f} global={Lg:.4f}")
+    A = np.array
+    d_ll = int(sum(DIV(v) for v in ll_)); d_lg = int(sum(DIV(v) for v in lg_))
+    d_sc = int(sum(DIV(v) for v in sc_))
+    st = A([not (DIV(ll_[i]) or DIV(lg_[i]) or DIV(sc_[i])) for i in range(n)])
+    ns = int(st.sum())
+    sc, ll, lg = A(sc_)[st], A(ll_)[st], A(lg_)[st]
+    nb = np.minimum(ll, lg)
+    pooled = float(np.std(np.concatenate([ll, lg]))) if ns else float("nan")
+    print("-" * 74)
+    print(f"P3  stable={ns}/{n}  divergences sc={d_sc} lpc={d_ll} gl={d_lg}")
+    print(f"  best scalar : {sc.mean():.4f} ± {sc.std():.4f}")
+    print(f"  local-PC    : {ll.mean():.4f} ± {ll.std():.4f}  "
+          f"(graph {nl} nodes, O(1) in H)")
+    print(f"  global      : {lg.mean():.4f} ± {lg.std():.4f}  "
+          f"(graph {ng} nodes, O(H·K))")
+    sc_margin = float(sc.mean() - nb.mean())
+    nondegen = ns > 0 and sc_margin > pooled
+    print(f"  scalar − best-nested = {sc_margin:+.4f}  (pooled std≈"
+          f"{pooled:.3f})")
+    print("-" * 74)
+    if not nondegen:
+        print("P3-A VERDICT: DEGENERATE — the tuned scalar is NOT clearly "
+              "beaten (margin ≤ pooled). Even cyclic reactivation does not "
+              "make credit assignment matter at this toy scale. The local "
+              "idea remains UNDETERMINED; report straight, do not spin.")
+        print(f"total wall time: {time.perf_counter() - t0:.1f}s")
+        return
+    print("P3-A VERDICT: NON-DEGENERATE — the tuned scalar is clearly beaten "
+          "by the nested optimizer. Credit assignment MATTERS here. P3-B now "
+          "decides which nested rule is better:")
+    qgap = float(lg.mean() - ll.mean())   # >0 => local-PC better quality
+    print(f"  P3-B  qgap (global − local-PC) = {qgap:+.4f}  "
+          f"(pooled≈{pooled:.3f}); div lpc={d_ll} gl={d_lg}; "
+          f"graph lpc={nl} gl={ng}")
+    if qgap > pooled:
+        print("P3-B VERDICT: ** LOCAL-PC BETTER ** — strictly better quality "
+              "AND O(1)-in-H vs O(H·K). Unambiguous.")
+    elif qgap < -pooled:
+        print("P3-B VERDICT: ** GLOBAL BETTER on quality ** — the "
+              "hypergradient wins quality beyond pooled std. Weigh against "
+              "its O(H·K) backward cost and any divergence; the local idea "
+              "is cheaper/stabler but quality-inferior here. Reported "
+              "straight (this refutes the pre-registered prediction).")
+    else:
+        cheaper = nl < ng
+        stable_ok = d_ll <= d_lg
+        if stable_ok and cheaper:
+            print(f"P3-B VERDICT: ** LOCAL-PC BETTER (by dominance) ** — "
+                  f"quality statistically EQUIVALENT (|qgap|≤pooled), local-PC "
+                  f"strictly cheaper (graph {nl} vs {ng}, O(1) vs O(H·K)) and "
+                  f"{'strictly more stable' if d_ll < d_lg else '≥ as stable'} "
+                  f"(div {d_ll} vs {d_lg}). Equal quality at lower cost ⇒ "
+                  f"local-PC is the better method on a non-degenerate "
+                  f"benchmark.")
+        elif not stable_ok:
+            print(f"P3-B VERDICT: MIXED — quality tie (|qgap|≤pooled) and "
+                  f"local-PC cheaper (graph {nl} vs {ng}) BUT local-PC "
+                  f"diverged MORE (div {d_ll} vs {d_lg}). Not a clean win; "
+                  f"reported straight as mixed.")
+        else:
+            print(f"P3-B VERDICT: quality tie; local-PC NOT cheaper "
+                  f"(graph {nl} vs {ng}). Report as equivalent, no dominance.")
+    print(f"total wall time: {time.perf_counter() - t0:.1f}s")
+
+
 def p1_scale(n):
     """C-scale (§7.6.1). SAME §4.3/Eq.45 construction, ~10x/5x/5x/5x larger.
     Pre-registered prediction: STAYS DEGENERATE (H-deg says degeneracy is
@@ -1110,6 +1221,8 @@ if __name__ == "__main__":
         p2_scale(int(sys.argv[2]) if len(sys.argv) > 2 else 8)
     elif len(sys.argv) > 1 and sys.argv[1] == "--p2-strength":
         p2_strength(int(sys.argv[2]) if len(sys.argv) > 2 else 10)
+    elif len(sys.argv) > 1 and sys.argv[1] == "--p3":
+        p3(int(sys.argv[2]) if len(sys.argv) > 2 else 10)
     elif len(sys.argv) > 1 and sys.argv[1] == "--lambda":
         lambda_sweep(int(sys.argv[2]) if len(sys.argv) > 2 else 8)
     elif len(sys.argv) > 1 and sys.argv[1] == "--lambda-fair":
