@@ -7,7 +7,14 @@
   deep-unroll stability (exp-0005) — and (b) external SOTA
   [Sparse Memory Finetuning, arXiv 2510.15103] + [Memory Is Not the
   Bottleneck, arXiv 2502.07274].
-- **Status:** PROPOSED — pre-registered, not yet run. Skeleton:
+- **Status:** RUN (2026-05-17, n=10 class-IL). **S-1 FAIL: testbed
+  inadequate — synthesis UNTESTED.** Minimal KV-memory layer collapses to
+  chance ACC (0.104 ≈ 0.10); its low Forget is the not-learning artifact.
+  The pre-registered hardened accuracy gate fired and **blocked a fabricated
+  "synthesis confirmed"** (raw forget 0.99→0.09 looked spectacular, was
+  vacuous). S-2 not interpretable. Synthesis neither confirmed nor refuted;
+  needs a real memory layer (learned query / better init / augment-not-
+  replace / actual SMF code) — a larger build. Results:
   [experiments/0009-sparse-memory-localpc/](../experiments/0009-sparse-memory-localpc/).
 - **Intended use:** the culminating test — do the two *surviving* mechanisms
   coexist without the anti-stacking that killed every prior NL variant?

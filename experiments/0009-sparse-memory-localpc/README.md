@@ -68,6 +68,42 @@ keeps the pre-registered LR fairness grid {3e-3, 1e-2}.
 2. `--seeds 10` class-IL — S-1 → S-2 (decisive) → S-3 → contrast.
 3. n=60 confirmation on any AMBIGUOUS headline.
 
+## Results (class-IL, n=10, RESOLVED 2026-05-17) — S-1 FAIL: testbed-inadequate, synthesis UNTESTED
+
+```
+ dense-naive ACC 0.195 Forget 0.992
+ replay      ACC 0.895 Forget 0.110  (bar)
+ mem-adam    ACC 0.104 Forget 0.086  <- ACC ≈ chance (0.10)
+ mem-localpc ACC 0.103 Forget 0.293  <- ACC ≈ chance
+ S-1 forget gap dense−mem-adam +0.906 10/10 p=.002  BUT mem-adam ACC≈chance
+ S-2 gated OFF (not interpretable at chance accuracy)
+```
+
+**S-1: FAIL — the minimal KV-memory layer is too weak to learn class-IL
+(ACC ≈ chance). Its low Forget is the not-learning artifact, not
+retention.** The pre-registered, smoke-hardened accuracy gate fired
+correctly and **prevented a fabricated success**: the raw forgetting
+collapse (0.99→0.09, 10/10, p=.002, "SEP") would, unguarded, have read as
+"sparse memory delivers retention — synthesis confirmed." It is not; the
+model learned nothing. **S-2 not interpretable; the synthesis is neither
+confirmed nor refuted — UNTESTED.**
+
+Mechanism (hypothesis, labelled): zero-init values + fixed-ish random keys
++ hard top-k, replacing (not augmenting) the FFN, starves gradient flow →
+representation can't form. Real SMF has a learned query, TF-IDF slot
+ranking, and augments rather than replaces capacity; the minimal version
+stripped too much. This is an implementation-strength issue, not evidence
+about the synthesis.
+
+**Methodological win (the actual takeaway):** the only thing that worked
+here was the discipline — the pre-registered hardened gate caught a
+spurious "it works" that the headline numbers would otherwise have
+produced. 9 experiments in, the guardrails are still earning their keep.
+
+**Status:** synthesis UNTESTED (testbed inadequate). To test it honestly
+needs a real memory layer (learned query, better init, augment-not-replace,
+ideally the actual SMF code), which is a larger build than a toy reimpl.
+
 ## Honest caveats baked in
 
 Minimal KV-memory (not SMF's TF-IDF ranking) — coexistence existence-test,
