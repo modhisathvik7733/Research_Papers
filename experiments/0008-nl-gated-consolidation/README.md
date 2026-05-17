@@ -51,6 +51,49 @@ exp-0004 best-of-grid control).
 3. n=60 confirmation on any AMBIGUOUS headline.
 4. (only if G-1/G-2 positive) richer agreement gates as a separate idea.
 
+## Results (class-IL, n=10, RESOLVED 2026-05-17) — clean double negative
+
+```
+ naive  ACC 0.195 Forget 0.992
+ replay ACC 0.895 Forget 0.110   (the bar)
+ rpc    ACC 0.758 Forget 0.218   replay+vanilla CMS (anti-stacks; SANITY ✓)
+ rgc    ACC 0.347 Forget 0.579   replay+Gated CMS  (THE FIX)
+ van    ACC 0.189 Forget 0.971   vanilla alone
+ gat    ACC 0.177 Forget 0.471   gated alone
+ SANITY  replay−rpc ACC m+0.136 10/10 p=.002 SEP  (anti-stacking reproduced)
+ G-1     replay−rgc Forget m-0.469 0/10 ; rgc−replay ACC m-0.548 0/10  -> FAIL
+ G-2     gat−van ACC m-0.012 3/10 NOT                                  -> FAIL
+```
+
+**Verdict: gated consolidation FAILS both pre-registered tests, decisively,
+every seed.** Not ambiguous, not partial — large negative effects.
+
+- **G-1 fails hard.** `rgc` is catastrophically worse than replay on both
+  axes (ACC −0.55, Forget +0.47, 0/10) AND worse than *vanilla* (`rpc`
+  0.758 → `rgc` 0.347): the gate deepened the conflict, did not fix it.
+  Pre-registered conclusion (the honest prior fired): **optimizer-side
+  consolidation cannot match or productively combine with rehearsal even
+  when gated** — a hardened, mechanism-backed negative across exp-0004+0008.
+- **G-2 fails AND falsifies our own exp-0004 root-cause story.** gat≈van
+  (≈chance). If removing rigidity does not restore plasticity, **rigidity
+  is not the (sole) cause** of vanilla CMS's class-IL failure. The deeper
+  honest read: a fixed multi-timescale momentum is an inadequate optimiser
+  for a real class-IL net regardless of gating (no adaptive
+  preconditioning; the LR grid could not rescue it). Reported as a
+  self-correction, not buried.
+- **Mechanism hypothesis (labelled, untested):** gating BOTH consolidation
+  and contribution by cos-agreement plausibly causes *update starvation*
+  under replay (mixed new+replayed gradients rarely align with a slow EMA →
+  updates broadly throttled → rgc worse than vanilla). Offered as the likely
+  "why", not asserted.
+
+**Net for the NL programme:** the smallest, most principled CMS component
+fix to the measured failure does not work — and in failing, corrected our
+mechanism model. Consolidated across exp-0002/0004/0008: the
+"stack/consolidate timescales in the optimiser to resist forgetting" lever
+is dominated by rehearsal and is likely the wrong lever once replay is
+available. A clean, decisive, useful negative.
+
 ## Honest caveats baked in
 
 Class-IL Split-MNIST scale. γ=relu(cos) is the simplest gate by design

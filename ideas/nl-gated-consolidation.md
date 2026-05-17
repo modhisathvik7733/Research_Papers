@@ -4,7 +4,13 @@
 - **Source:** Root-cause fix for the measured failure in exp-0004 (vanilla
   multi-timescale CMS fails class-IL ≈ chance AND anti-stacks with replay:
   replay 0.110/0.895 → rpc 0.218/0.758, strictly worse 0/10).
-- **Status:** PROPOSED — pre-registered, not yet run. Skeleton:
+- **Status:** RUN (2026-05-17, n=10 class-IL). **DECISIVE DOUBLE NEGATIVE.**
+  Sanity ✓; **G-1 FAIL** (rgc ACC 0.347 vs replay 0.895, 0/10, and worse
+  than vanilla 0.758 — gate deepened the conflict); **G-2 FAIL** (gat≈van≈
+  chance — and this *falsifies the exp-0004 "rigidity is the cause" story*:
+  removing rigidity didn't restore plasticity). Pre-registered honest prior
+  fired: optimizer-side consolidation can't match/combine-with rehearsal
+  even gated — hardened law. Self-correction logged. Results:
   [experiments/0008-nl-gated-consolidation/](../experiments/0008-nl-gated-consolidation/).
 - **Intended use:** the smallest component change to HOPE/CMS that targets
   the *measured* root cause; informative either way.
