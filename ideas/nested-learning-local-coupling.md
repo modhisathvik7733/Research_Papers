@@ -298,14 +298,25 @@ divergence guard added to `p1` (orig `--p1` numerically unchanged).
   - **P-3 CONFIRMED w/ twist:** local-PC vs global = paired tie, raw lean
     mildly to GLOBAL ⇒ local-PC better **only by dominance** (equal quality,
     O(1) cost, global diverged 1/9 & local-PC never), NOT a quality win.
-- **REVISED FINAL ANSWER.** (1) Structural primitive: works unconditionally.
-  (2) Nesting **does** matter — off the canonical geometry, paired-significant.
-  (3) local-PC = the better method by dominance (equal quality, cheaper,
-  stabler), not by quality. (4) Canonical degeneracy: undetermined at n=10.
-  Contribution = clean O(1) structural law + a genuine pre-registered
-  off-degenerate-geometry positive for nesting + an honest retraction of the
-  over-strong canonical claim. Next: **higher n** (resolve canonical, tighten
-  significances) — cheap, decisive.
+- **Higher-n confirmation (`--paired 60`, §7.6.9–10) — RESOLVES it.**
+  canonical n10 AMBIG → **n60 DEGENERATE** (m+.003, t0.95) — n=10 was
+  underpowered noise; the §7.6.8 canonical-headline withdrawal is **reversed**,
+  claim reinstated (audit trail kept). P3 n10 SEP → **n60 NON-DEGEN decisive**
+  (t8.85, 55/60, p<.001, 1.14σ — clears the effect-size gate): the real
+  pre-registered positive. C-hetero n10 SEP → **n60 AMBIGUOUS**: highly
+  significant (t4.68, p<.001, 48/59) but **modest ~0.6σ** (below the magnitude
+  gate). Head-to-head: **paired tie** (33/60, coin-flip) → local-PC by
+  dominance. Scorecard: H-n1 half (P3 yes / C-hetero no), H-n2 verdict-right
+  mechanism-wrong (effect ≈0, not small-consistent), H-n3 confirmed.
+- **FINAL RESOLVED ANSWER.** (1) Structural primitive works unconditionally.
+  (2) Canonical genuinely DEGENERATE (n=60) — central deflationary headline
+  solid. (3) Off the degenerate geometry nesting DOES beat a tuned scalar —
+  decisive & pre-registered on P3, real-but-modest on C-hetero. (4) local-PC =
+  better method by strict dominance (equal quality, cheaper, stabler), not by
+  quality. Contribution = clean O(1) law + solid canonical degeneracy + a
+  decisive pre-registered off-degenerate positive for nesting + a fully
+  reported withdraw→reinstate audit trail. Remaining: C-scale-paired; formal
+  effect-size account of C-hetero.
 
 ### Remaining honest caveats after the chain
 - Still a toy (24-d readout, 10 tasks). "Nonlinear" = MLP **combiner/readout**;

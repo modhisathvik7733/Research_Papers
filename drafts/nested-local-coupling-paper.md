@@ -9,21 +9,25 @@ sweep** triggered its **bounding clause**; and a final, decisive
 **out-of-family benchmark (P3, cyclic reactivation built to require
 long-horizon credit)** also returned **degenerate** by the verbatim rule.
 Across five pre-registered constructions the *between-seed* rule never
-separated nesting from a tuned scalar. A final pre-registered **paired
-(common-random-number) analysis** — the correct variance for this design,
-coded separately, originals preserved — then cut both ways: it **recovers a
-statistically significant positive** (nesting beats the tuned scalar on the
-two out-of-canonical constructions, p=0.039 and p=0.021) **and softens the
-strongest headline** (canonical §4.3/Eq. 45 is *ambiguous at n=10*, not
-cleanly degenerate). Head-to-head, local-PC vs the hypergradient is a **paired
-quality tie** (raw lean mildly to global); local-PC wins **only by dominance**
-— O(1) vs O(H) cost and 0-vs-1 divergence. Net: nesting *does* matter off the
-degenerate geometry; the cheap local rule matches the expensive hypergradient
-there at strictly lower cost and better stability; the canonical-degeneracy
-claim is downgraded to underdetermined pending higher n. The **unconditional
-structural law** is unaffected. All numbers are 8–10-seed CPU runs reproducible
-from a single script. No claim is softened; several of our own pre-registered
-predictions were wrong and are reported as wrong.*
+separated nesting from a tuned scalar. We then ran the statistically correct
+**paired (common-random-number) analysis** (separately coded, originals
+preserved) at n=10 and, decisively, at **n=60**. The resolved picture:
+**(1)** canonical §4.3/Eq. 45 is **degenerate** — at n=60 the paired
+scalar−nested gap collapses to ≈0 (m +0.003, t 0.95); the n=10 ambiguity was
+underpowered noise, so the strong canonical-degeneracy headline is
+**reinstated on solid footing** (audit trail kept). **(2)** Off the degenerate
+geometry, nesting/credit-assignment **genuinely beats the best tuned scalar**:
+decisively and pre-registered-significantly on the out-of-family cyclic
+benchmark P3 (n=60: t=8.85, 55/60, p<0.001, clears the effect-size gate), and
+highly significantly but *modestly* on C-hetero (t=4.68, p<0.001, but ≈0.6σ —
+below our deliberate effect-size gate). **(3)** There, local-PC vs the
+hypergradient is a **paired quality tie** (n=60 lean a negligible coin-flip);
+local-PC wins **by dominance** — O(1) vs O(H) and 0-vs-1 divergence — not by
+quality. The **unconditional structural law** is unaffected throughout. All
+numbers are 10–60-seed CPU runs reproducible from a single script. No claim is
+softened; several of our own pre-registered predictions were wrong (including
+ones we briefly acted on, then corrected with higher n) and are reported as
+wrong with the audit trail intact.*
 
 ---
 
@@ -92,19 +96,21 @@ it too returned degenerate by the *between-seed* verbatim rule. Finally we
 pre-registered and ran the **paired (common-random-number) analysis** — the
 statistically correct variance for this design (all methods share the per-seed
 task draw), coded separately, with the between-seed verdicts preserved
-unchanged. It cuts both ways and we report both: **(+)** on the two
-out-of-canonical constructions (C-hetero, P3) the nested optimizer beats the
-best tuned scalar with **p=0.039 and p=0.021** — a real positive, masked until
-now by the wrong variance; **(−)** canonical §4.3/Eq. 45 becomes
-**AMBIGUOUS at n=10** (t=2.26, p=0.109), so the strong "canonical benchmark is
-optimizer-degenerate" headline is **downgraded to underdetermined**, as
-pre-committed. Honest bottom line: the local idea **works as a structural
-primitive** unconditionally (O(1)-in-H, 0 divergences); **nesting does matter**
-once the benchmark leaves the degenerate geometry; and there local-PC is a
-**paired quality tie** with the hypergradient (raw lean mildly to global) that
-wins **by dominance** — equal quality, O(1) vs O(H), better stability. The
-single highest-value next step is raising n until canonical resolves and the
-significances tighten — named, not papered over.
+unchanged, and ran it at n=10 and decisively at **n=60**. Resolved: **(+)** off
+the degenerate geometry the nested optimizer **genuinely beats the best tuned
+scalar** — decisively and pre-registered-significantly on the out-of-family
+cyclic benchmark P3 (n=60 t=8.85, 55/60, p<0.001) and highly significantly but
+modestly on C-hetero (t=4.68, p<0.001, ≈0.6σ); **(=)** canonical §4.3/Eq. 45
+is **degenerate** — at n=60 the paired gap collapses to ≈0 (m +0.003, t 0.95);
+the brief n=10 ambiguity was underpowered noise, so the strong
+canonical-degeneracy headline is **reinstated** (we show, not hide, that we
+withdrew it at n=10 and higher n restored it). Honest bottom line: the local
+idea **works as a structural primitive** unconditionally (O(1)-in-H, 0
+divergences); **nesting does matter** once the benchmark leaves the degenerate
+geometry; there local-PC is a **paired quality tie** with the hypergradient
+(n=60 lean a negligible coin-flip) that wins **by dominance** — equal quality,
+O(1) vs O(H), better stability. The residual gaps (C-scale-paired untested; a
+formal effect-size account of C-hetero) do not change the resolved picture.
 
 ---
 
@@ -465,13 +471,13 @@ paper than "a cheaper credit rule."
 **We do not claim.** (i) Superiority. (ii) That local-PC's quality parity is
 evidence for the method — P1 removed that reading. (iii) A demonstrated
 hardware failure (extrapolation from the O(H·K·d) law). (iv) Any result beyond
-a 24-d, 10-task toy. (v) **Superseded by §7.6.8:** under the correct paired
-analysis, nesting *does* significantly beat a tuned scalar on the two
-out-of-canonical constructions (C-hetero p=0.039, P3 p=0.021). What we do
-**not** claim: that local-PC beats the *hypergradient* on quality (paired tie,
-raw lean to global) — local-PC's advantage is dominance (O(1) cost, stability),
-not quality; and that the canonical benchmark is *cleanly* degenerate (paired:
-ambiguous at n=10, p=0.109 — downgraded to underdetermined).
+a 24-d, 10-task toy. (v) **Resolved at n=60 (§7.6.10):** under the correct
+paired analysis, nesting *does* genuinely beat a tuned scalar off the
+degenerate geometry — decisively/pre-registered on P3 (n=60 t=8.85, p<0.001),
+significantly-but-modestly on C-hetero (t=4.68, p<0.001, ≈0.6σ). Canonical is
+**degenerate** at n=60 (gap ≈0, t=0.95). What we still do **not** claim: that
+local-PC beats the *hypergradient* on quality (paired tie, n=60 lean a
+coin-flip) — its advantage is dominance (O(1) cost, stability), not quality.
 
 ---
 
@@ -837,7 +843,10 @@ hypothesised. **P-1 wrong for canonical, and we report it as a weakening, as
 pre-committed**: canonical is **AMBIGUOUS at n=10** (t=2.26, p=0.109, sign
 8/10), *not* cleanly degenerate — the strong claim "NL's canonical §4.3/Eq. 45
 benchmark *is* optimizer-degenerate" does **not** survive the corrected
-analysis; it downgrades to *underdetermined at this n*. (C-scale was not re-run
+analysis; it downgrades to *underdetermined at this n*. **[Superseded by
+§7.6.10: at n=60 this resolves cleanly to DEGENERATE — the n=10 ambiguity was
+underpowered noise; the strong claim is reinstated. This n=10 record is kept
+as the audit trail.]** (C-scale was not re-run
 under the paired analysis — the second half of P-1 is untested; listed as
 remaining, not silently claimed.) **P-3 confirmed**: head-to-head global vs
 local-PC is a **paired tie** on both non-degenerate constructions, so local-PC
@@ -858,6 +867,81 @@ intact in §5.6–5.7 and in the script's reprinted ORIGINAL lines. The
 single highest-value next step is now unambiguous: **raise n** until canonical
 resolves (degenerate vs not) and the C-hetero/P3 significances tighten.
 
+#### 7.6.9 Higher-n confirmation (pre-registered before running; n=60)
+
+We re-run the §7.6.7 paired analysis at **n=60** (6× n=10) on the three toy
+configs (canonical-P1, C-hetero, P3). Same separately-coded analysis, same
+verbatim-mirrored paired rule, originals still reprinted unchanged. (C-scale
+paired remains the untested half of P-1 — explicitly *not* claimed here;
+listed as remaining, as its config is ~70 s/seed.)
+
+> **Pre-registered predictions, with the key statistical subtlety made
+> explicit.** Our SEP gate is `m > s_pair` (an *effect-size* threshold, ≈0.7σ
+> on the per-seed difference) **and** sign ≥ ⌈0.8 n⌉. Critically, `s_pair` is
+> a *population* sd that does **not** shrink with n, while the sign-test p and
+> the paired t **do** sharpen with n. We therefore predict a **nuanced
+> resolution, not a binary flip**: (H-n1) **C-hetero and P3 sharpen to clearly
+> NON-DEGENERATE** with sign-test p well below 0.01 and t growing — the effect
+> is both consistent *and* large (m ≈ 0.04–0.05 > s_pair). (H-n2) **Canonical
+> stays NOT/AMBIGUOUS by the SEP rule even though its sign-test becomes
+> significant** — because the canonical per-seed gap is genuinely *small*
+> (m ≈ 0.014 ≪ s_pair ≈ 0.02), a tiny-but-consistent effect. The honest
+> resolution we expect is therefore: *canonical is not cleanly degenerate and
+> not strongly non-degenerate — it is a **small, consistent** effect*, which
+> is a sharper and more defensible statement than either "degenerate" or "the
+> scalar is beaten." (H-n3) Head-to-head global vs local-PC stays a **paired
+> tie** at n=60 on every construction (local-PC better only by dominance). Any
+> departure — e.g. canonical clearing the SEP effect-size bar, or the
+> head-to-head separating — is reported as a surprise against this
+> registration, not re-spun.
+
+#### 7.6.10 Higher-n resolution (n=60; run; resolves the n=10 muddle, mostly toward the headline)
+
+Originals reprinted unchanged; paired at n=60 (stable subset):
+
+| construction | n=10 paired | **n=60 paired** | m (Δ scalar−nested) | t | sign | verdict |
+|---|---|---|---|---|---|---|
+| canonical-P1 | AMBIGUOUS | **DEGENERATE** | +0.003 | 0.95 | 40/60 | scalar not beaten |
+| C-hetero | NON-DEGEN | **AMBIGUOUS** | +0.030 | **4.68** | 48/59 (p<0.001) | significant but modest |
+| P3-cyclic | NON-DEGEN | **NON-DEGENERATE** | +0.038 | **8.85** | 55/60 (p<0.001) | scalar clearly beaten |
+| head-to-head (P3) | tie | **paired tie** | +0.006 (g−l) | — | 33/60 | local-PC by dominance |
+
+**Scorecard against §7.6.9 (straight).** *H-n2 — verdict right, mechanism
+wrong.* Canonical stays NOT-separated and resolves to **DEGENERATE**, but not
+through the "small, consistent, sign-significant" effect we predicted: at n=60
+the effect **collapses to ≈0** (m +0.003, t 0.95, 40/60). The n=10 "ambiguous"
+was underpowered noise, not a buried small effect. **Consequence: the §7.6.8
+downgrade is itself reversed by higher n — the strong claim "NL's canonical
+§4.3/Eq. 45 benchmark is optimizer-degenerate" is reinstated at n=60.** The
+audit trail stands: between-seed always DEGENERATE; paired n=10 AMBIGUOUS
+(underpowered); paired n=60 DEGENERATE. We reinstate the claim and show the
+path, rather than hide that we briefly withdrew it.
+*H-n1 — half right.* **P3 sharpened decisively** to NON-DEGENERATE
+(t=8.85, 55/60, effect size m/s_pair ≈ 1.14σ — clears the pre-registered SEP
+bar): nesting clearly and substantially beats the best tuned scalar on the
+out-of-family cyclic benchmark. **C-hetero did *not* sharpen to SEP**: it is
+**AMBIGUOUS** because our SEP gate is *effect-size* based (`m > s_pair`,
+≈1σ) and C-hetero's true effect is ≈0.6σ — i.e. **highly significant
+(t=4.68, p<0.001, 48/59) but modest in magnitude**. We report this as a
+prediction miss with its exact cause: significance ≠ effect size, and our
+pre-registered gate (deliberately) tests the latter.
+*H-n3 — confirmed.* Head-to-head global vs local-PC is a **paired tie** at
+n=60 (|m|=0.006 ≪ s_pair 0.025, 33/60 ≈ coin-flip); local-PC remains better
+strictly **by dominance** (O(1) vs O(H), and global diverged 1/60 on C-hetero
+while local-PC never did). The raw quality lean, which was mildly toward
+global at n=10, is at n=60 a negligible coin-flip — a cleaner tie, not a
+local-PC quality win.
+
+**Resolved bottom line.** Higher n *clarified*, it did not muddy: the
+canonical-degeneracy headline is **restored on solid footing**; **P3 is a
+decisive, pre-registered, high-powered positive** that nesting/credit
+assignment beats a tuned scalar once off the degenerate geometry; **C-hetero
+is real-but-modest** (significant, sub-1σ); and **local-PC = the better
+method by dominance**, equal quality at strictly lower cost and better
+stability. The remaining honest gap is C-scale-paired (untested) and a formal
+effect-size characterisation of C-hetero; neither changes the resolved
+picture.
+
 ---
 
 ## 8. Limitations
@@ -874,16 +958,20 @@ resolves (degenerate vs not) and the C-hetero/P3 significances tighten.
   heterogeneity sweep up to ~2000:1 condition spread (C-stronger, bounding
   clause). **P3, built outside the family specifically to require long-horizon
   credit, also returned degenerate** by the *between-seed* rule — **but the
-  pre-registered paired analysis (§7.6.8) overturns this for the
-  out-of-canonical constructions**: nesting significantly beats the scalar on
-  C-hetero (p=0.039) and P3 (p=0.021). The correct reading is therefore
-  *not* "no quality home anywhere" but "credit assignment matters off the
-  canonical geometry; the between-seed rule lacked the power to see it." Two
-  honest residual limitations: (a) at n=10 the paired test leaves **canonical
-  ambiguous** (p=0.109) — neither cleanly degenerate nor not; the strong
-  canonical-degeneracy claim is withdrawn pending higher n; (b) C-scale was
-  **not** re-run under the paired analysis, so that half of prediction P-1 is
-  untested. The decisive open item is higher n, not another toy knob.
+  pre-registered paired analysis (§7.6.7–10), confirmed at n=60, overturns
+  this for the out-of-canonical constructions**: nesting beats the best tuned
+  scalar decisively on P3 (n=60 t=8.85, 55/60, p<0.001, clears the
+  pre-registered effect-size gate) and highly-significantly-but-modestly on
+  C-hetero (t=4.68, p<0.001, ≈0.6σ). The correct reading is "credit
+  assignment genuinely matters off the canonical geometry; the between-seed
+  rule lacked the power to see it." Honest residuals: (a) **C-hetero is real
+  but modest** — significant by sign/t, sub-1σ effect size, so AMBIGUOUS by
+  our deliberate magnitude gate (we report significance ≠ effect size, not a
+  clean win); (b) **canonical is degenerate at n=60** (paired gap ≈0,
+  t 0.95) — the n=10 ambiguity was underpowered noise and the §7.6.8
+  withdrawal is reversed (audit trail kept, not hidden); (c) C-scale was
+  **not** re-run paired, so that half of P-1 is untested. None of these
+  changes the resolved picture.
 - **Several of our pre-registered predictions were wrong.** C-hetero predicted
   clean "NESTING MATTERS" (no). C-stronger predicted a flip at h≤4 and rising
   divergence (no; only monotone margin held). **P3 predicted P3-A
@@ -956,6 +1044,9 @@ Single self-contained script, CPU, deterministic, no external data:
 - `python run.py --p2-strength 10` — **§5.7 / §7.6.3–4 C-stronger
   (pre-registered heterogeneity sweep h∈{0..4}; monotone margin confirmed;
   bounding clause triggered → family robustly degenerate)**
+- `python run.py --paired 60` — **§7.6.9–10 higher-n confirmation
+  (canonical→DEGENERATE, P3→NON-DEGENERATE t=8.85 p<0.001, C-hetero
+  significant-but-modest; head-to-head paired tie)**
 - `python run.py --paired 10` — **§7.6.7–8 paired analysis (NEW
   pre-registered, separately coded; reprints ORIGINAL between-seed verdicts
   UNCHANGED + paired verdict; canonical→AMBIGUOUS, C-hetero/P3→NON-DEGENERATE
@@ -1031,19 +1122,25 @@ idea working, and which is better": **(1)** as a structural/efficiency
 primitive it works unconditionally — O(1) in the unroll horizon, zero
 divergences. **(2)** Nesting/credit-assignment **does** matter once the
 benchmark leaves the canonical degenerate geometry: under the correct paired
-test the nested optimizer beats the best tuned scalar on C-hetero (p=0.039)
-and P3 (p=0.021). **(3)** There, local-PC vs the global hypergradient is a
-**paired quality tie** (raw lean mildly to global) — so local-PC is the better
-*method* strictly **by dominance**: statistically equal quality at O(1) vs
-O(H) cost and with the stability edge (global diverged, local-PC did not),
-**not** by superior quality. **(4)** The strongest original headline — "NL's
-canonical §4.3/Eq. 45 benchmark is optimizer-degenerate" — does **not** survive
-the corrected analysis: at n=10 canonical is *ambiguous* (p=0.109), so we
-downgrade it to underdetermined and say so plainly, originals left on the
-record. The single highest-value next step is no longer "another knob" but
-**raising n** until canonical resolves and the C-hetero/P3 significances
-tighten. A study that pre-registers its decisive tests, runs them, recovers a
-real positive *and* retracts its own overclaim under a corrected analysis it
-pre-committed to — audit trail intact — is, we maintain, more useful to the
-Nested Learning programme than the confident credit-assignment story we set
-out to write.
+test, confirmed at **n=60**, the nested optimizer beats the best tuned scalar
+**decisively on the out-of-family benchmark P3** (n=60 t=8.85, 55/60,
+p<0.001 — clears the pre-registered effect-size gate) and
+**highly-significantly-but-modestly on C-hetero** (t=4.68, p<0.001, ≈0.6σ).
+**(3)** There, local-PC vs the global hypergradient is a **paired quality
+tie** (n=60 lean a negligible coin-flip) — so local-PC is the better *method*
+strictly **by dominance**: statistically equal quality at O(1) vs O(H) cost
+and with the stability edge (global diverged 1/60 on C-hetero, local-PC
+never), **not** by superior quality. **(4)** The strongest original headline —
+"NL's canonical §4.3/Eq. 45 benchmark is optimizer-degenerate" — was briefly
+*withdrawn* when the paired test read ambiguous at n=10, then **reinstated at
+n=60** where the paired gap collapses to ≈0 (t=0.95): the n=10 ambiguity was
+underpowered noise. We show that withdraw-then-reinstate path rather than hide
+it; the audit trail (between-seed always degenerate; paired n=10 ambiguous;
+paired n=60 degenerate) is in the script and §7.6.8/§7.6.10. The remaining
+honest gap is C-scale-paired (untested) and a formal effect-size account of
+C-hetero — neither alters the resolved picture. A study that pre-registers its
+decisive tests, runs them, recovers a real positive, *and* publicly
+withdraws-then-reinstates its own headline as the evidence base grows — audit
+trail intact, no step hidden — is, we maintain, more useful to the Nested
+Learning programme than the confident credit-assignment story we set out to
+write.

@@ -213,32 +213,46 @@ P3-cyclic      DEGENERATE                          m+0.041 t3.77 9/10 p.021 -> N
 head-to-head global vs local-PC: paired TIE on both (raw lean mildly to global)
 ```
 
-Cuts both ways, reported straight: **(+)** nesting significantly beats a
-tuned scalar once off the canonical geometry (C-hetero p=.039, P3 p=.021) —
-real effect, was masked by between-seed variance; **(−)** canonical is
-**AMBIGUOUS at n=10** (p=.109), so the strong "canonical is degenerate"
-headline is **downgraded to underdetermined** (pre-committed). Predictions:
-P-2 confirmed; P-1 wrong for canonical (reported wrong); P-3 confirmed (tie).
+**Higher-n confirmation (`--paired 60`, §7.6.9–10) — resolves it:**
 
-## Bottom line — IS THE LOCAL IDEA WORKING? (after the paired analysis)
+```
+construction   n=10 paired      n=60 paired                     reading
+canonical-P1   AMBIGUOUS        DEGENERATE m+.003 t0.95 40/60    n=10 = noise; HEADLINE RESTORED
+C-hetero       NON-DEGEN        AMBIGUOUS  m+.030 t4.68 48/59    p<.001 but ~0.6σ (modest)
+P3-cyclic      NON-DEGEN        NON-DEGEN  m+.038 t8.85 55/60    p<.001, 1.14σ — DECISIVE
+head-to-head (P3): paired TIE m+.006 33/60 -> local-PC by dominance
+```
+
+Resolved, reported straight: **canonical is genuinely DEGENERATE** (n=10
+ambiguity was underpowered noise — the §7.6.8 withdrawal is *reinstated* at
+n=60, audit trail kept). **P3: nesting decisively beats the tuned scalar**
+(t=8.85, p<.001, pre-registered effect-size gate cleared) — the real positive.
+**C-hetero: real but modest** (highly significant by sign/t, sub-1σ effect).
+Head-to-head: **paired tie ⇒ local-PC better only by dominance**, NOT quality.
+Scorecard: H-n1 half right (P3 yes, C-hetero no — significant≠large); H-n2
+verdict right / mechanism wrong (effect collapsed to ≈0, not "small
+consistent"); H-n3 confirmed.
+
+## Bottom line — IS THE LOCAL IDEA WORKING? (resolved at n=60)
 
 - **Structural/efficiency primitive: YES, unconditionally.** O(1)-in-H
   (101 vs 582 nodes), 0 divergences.
-- **Does nesting/credit-assignment matter? YES — off the canonical geometry.**
-  Paired test: nested beats best tuned scalar on C-hetero (p=.039) and P3
-  (p=.021). It does NOT on canonical (ambiguous, n=10) — needs higher n.
-- **local-PC vs global: paired quality TIE** (raw lean mildly to global) ⇒
+- **Canonical §4.3/Eq.45: genuinely DEGENERATE** (n=60, gap≈0, t=0.95). The
+  central deflationary headline holds on solid footing.
+- **Does nesting/credit-assignment matter? YES — off the canonical geometry,
+  decisively on P3** (n=60 t=8.85, p<.001, pre-registered gate cleared);
+  real-but-modest on C-hetero (t=4.68, p<.001, ~0.6σ).
+- **local-PC vs global: paired quality TIE** (n=60 lean a coin-flip) ⇒
   **local-PC the better method by strict dominance** (equal quality, O(1) vs
-  O(H), better stability — global diverged 1/9 on C-hetero, local-PC never).
-  NOT a quality win for local-PC; an efficiency+stability win at equal quality.
-- **Highest-value next step:** raise n (resolve canonical; tighten the
-  C-hetero/P3 significances). Not another toy knob.
+  O(H), better stability — global diverged 1/60 on C-hetero, local-PC never).
+  NOT a quality win; an efficiency+stability win at equal quality.
+- **Remaining:** C-scale-paired (untested half of P-1); formal effect-size
+  account of C-hetero. Neither changes the resolved picture.
 
 ## Remaining
 
-1. **Higher n** — the one decisive item: resolve canonical (paired ambiguous
-   at n=10) and tighten C-hetero/P3 significances. Cheap on CPU.
-2. C-scale under the paired analysis (untested half of prediction P-1).
-3. Divergence-rate confirmation at higher n (global blow-up sparse: 1/10 @ h=1).
+1. C-scale under the paired analysis (untested half of prediction P-1).
+2. Formal effect-size characterisation of C-hetero (significant but ~0.6σ).
+3. Divergence-rate confirmation (global blow-up sparse: 1/60 on C-hetero).
 4. Real-d demonstration converting the proven graph-memory law into an actual
    OOM/timeout (extrapolation only so far).
